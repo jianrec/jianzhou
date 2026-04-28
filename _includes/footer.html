@@ -1,6 +1,13 @@
 <footer class="site-footer">
-  <div class="site-footer__inner">
-    <p>&copy; {{ site.time | date: "%Y" }} {{ site.author.name }}. Powered by Jekyll and GitHub Pages.</p>
-    <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
-  </div>
-</footer>
+  <div class="offsite-links">
+    {% if site.footer.has_social %}
+      {% include social.html %}
+    {% endif %}
+  </div><!-- .offsite-links -->
+  <div class="footer-bottom">
+    <div class="site-info">
+      {{ site.footer.content | markdownify }}
+    </div><!-- .site-info -->
+    <a href="#page" id="back-to-top" class="back-to-top"><span class="screen-reader-text">回到顶部</span>&#8593;</a>
+  </div><!-- .footer-bottom -->
+</footer><!-- .site-footer -->

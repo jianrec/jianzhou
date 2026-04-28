@@ -1,8 +1,8 @@
 ---
 title: "关于"
 permalink: /about/
-eyebrow: "About"
 description: "一个用于沉淀技术实践、阅读笔记和个人项目的长期主页。"
+feature_image: /images/about.jpg
 ---
 
 你好，我是周健。这个博客用来记录我在技术、工具和写作上的探索，也会整理一些可复用的经验清单。

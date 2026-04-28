@@ -1,7 +1,6 @@
 ---
 title: "文章"
 permalink: /archive/
-eyebrow: "Archive"
 description: "按时间整理的全部文章。"
 ---
 
@@ -10,12 +9,12 @@ description: "按时间整理的全部文章。"
 {% for year in posts_by_year %}
 <section class="archive-year" aria-labelledby="year-{{ year.name }}">
   <h2 id="year-{{ year.name }}">{{ year.name }}</h2>
-  <div class="archive-list">
+  <ul class="archive-post-list">
     {% for post in year.items %}
-      {% include post-card.html post=post %}
+      <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="archive-meta"> — <time class="archive-date" datetime="{{ post.date | date: "%Y-%m-%d" }}">{{ post.date | date: "%Y年%m月%d日" }}</time></span></li>
     {% endfor %}
-  </div>
+  </ul>
 </section>
 {% else %}
-<p class="empty-state">还没有发布文章。</p>
+<p>还没有发布文章。</p>
 {% endfor %}

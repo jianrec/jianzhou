@@ -3,9 +3,7 @@ description: "记录技术实践、阅读笔记与长期思考。"
 lang: "zh-CN"
 timezone: "Asia/Shanghai"
 
-# 上线后按仓库类型修改：
-# - 用户主页仓库：url: "https://你的 GitHub 用户名.github.io"，baseurl: ""
-# - 项目页仓库：url: "https://你的 GitHub 用户名.github.io"，baseurl: "/仓库名"
+# 项目页仓库发布地址。
 url: "https://jianrec.github.io"
 baseurl: "/jianzhou"
 
@@ -16,6 +14,25 @@ author:
   email: ""
   github: "jianrec"
 
+favicon: images/favicon.png
+google_analytics: ""
+disqus: ""
+accent_color: "#2d72d9"
+
+navigation:
+  - text: "首页"
+    url: /
+  - text: "关于"
+    url: /about/
+  - text: "项目"
+    url: /projects/
+  - text: "标签"
+    url: /tags/
+
+footer:
+  content: "&copy; 2026 周健. Theme by [JustGoodThemes](https://www.justgoodthemes.com)."
+  has_social: true
+
 permalink: /blog/:year/:month/:day/:title/
 markdown: kramdown
 kramdown:
@@ -23,9 +40,13 @@ kramdown:
   hard_wrap: false
 
 plugins:
+  - jekyll-paginate
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
+
+paginate: 3
+paginate_path: "/page:num/"
 
 defaults:
   - scope:

@@ -1,18 +1,32 @@
-<a class="skip-link" href="#content">跳到正文</a>
-
 <header class="site-header">
-  <div class="site-header__inner">
-    <a class="brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} 首页">
-      <img class="brand__mark" src="{{ '/assets/images/monogram.svg' | relative_url }}" alt="" width="44" height="44">
-      <span class="brand__text">{{ site.title }}</span>
-    </a>
-
-    <nav class="nav" aria-label="主导航">
-      {% for item in site.data.navigation %}
-        <a class="nav__link" href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>
-          {{ item.title }}
-        </a>
-      {% endfor %}
-    </nav>
-  </div>
+  {% if page.url == "/" %}
+  <h1 class="site-title"><a class="logo-text" href="{{ site.baseurl }}/">{{site.title}}</a></h1>
+  {% else %}
+  <p class="site-title"><a class="logo-text" href="{{ site.baseurl }}/">{{site.title}}</a></p>
+  {% endif %}
+  <nav class="site-navigation">
+    <div class="site-navigation-wrap">
+      <h2 class="screen-reader-text">主导航</h2>
+      <ul class="menu">
+        {% for item in site.navigation %}
+        {% assign current = nil %}
+        {% if page.url == item.url %}
+        {% assign current = 'nav-current' %}
+        {% endif %}
+        <li class="menu-item {{ current }}">
+          <a class="{{ current }}" href="{{ item.url | relative_url }}">{{ item.text }}</a>
+        </li>
+        {% endfor %}
+      </ul><!-- .menu -->
+      <button id="menu-close" class="menu-toggle"><span class="screen-reader-text">关闭菜单</span><span
+          class="icon-close" aria-hidden="true"></span></button>
+    </div><!-- .site-navigation-wrap -->
+  </nav><!-- .site-navigation -->
+  <button id="menu-open" class="menu-toggle"><span class="screen-reader-text">打开菜单</span><span class="icon-menu" aria-hidden="true"></span></button>
 </header>
+
+{% if site.description and site.description != "" and page.url == "/" %}
+<div class="site-description fadeInDown delay_05s">
+  <p>{{ site.description }}</p>
+</div><!-- .site-description -->
+{% endif %}

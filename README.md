@@ -1,6 +1,8 @@
 # 周健的个人博客
 
-这是一个基于 Jekyll 和 GitHub Pages 的免费托管个人博客模板，包含首页、文章归档、项目页、关于页、RSS、站点地图、SEO 元数据和 GitHub Actions 自动部署流程。
+这是一个基于 Jekyll 和 GitHub Pages 的免费托管个人博客，使用 Scriptor 主题，包含首页、标签页、文章归档、项目页、关于页、RSS、站点地图、SEO 元数据和 GitHub Actions 自动部署流程。
+
+主题来源：[Scriptor by JustGoodThemes](https://github.com/JustGoodThemes/Scriptor-Jekyll-Theme)，MIT License。
 
 ## 本地预览
 
