@@ -3,17 +3,12 @@ layout: default
 ---
 
 <section class="home-intro">
-  <p class="kicker">Personal Journal</p>
   <h1>{{ site.title }}</h1>
   <p>{{ site.description }}</p>
-  <div class="intro-actions">
-    <a href="{{ '/about/' | relative_url }}">关于我</a>
-    <a href="{{ '/tags/' | relative_url }}">按标签浏览</a>
-  </div>
 </section>
 
 <section class="post-feed" aria-labelledby="latest-title">
-  <h2 id="latest-title">近期更新</h2>
+  <h2 id="latest-title">最新内容</h2>
   <ul class="post-list">
     {% for post in site.posts %}
       <li>

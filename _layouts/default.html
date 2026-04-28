@@ -3,14 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#faf9f6">
+    <meta name="theme-color" content="#1b1a18">
     <script>
       (function () {
         try {
           var theme = localStorage.getItem('theme');
-          if (theme === 'dark' || theme === 'light') {
-            document.documentElement.setAttribute('data-theme', theme);
-          }
+          document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
         } catch (error) {}
       })();
     </script>
@@ -24,7 +22,14 @@
   <body>
     {% include header.html %}
     <main id="content" class="site-main">
-      {{ content }}
+      <div class="content-grid">
+        <div class="content-primary">
+          {{ content }}
+        </div>
+        {% unless page.sidebar == false %}
+          {% include sidebar.html %}
+        {% endunless %}
+      </div>
     </main>
     {% include footer.html %}
     <script src="{{ '/assets/js/site.js' | relative_url }}"></script>

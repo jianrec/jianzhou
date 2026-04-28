@@ -18,15 +18,25 @@ favicon: ""
 google_analytics: ""
 disqus: ""
 
+entry_link:
+  text: "← 英文主页"
+  url: "#"
+
+sidebar:
+  notice_title: "站务公告"
+  notice: "这里预留给你的公告、更新说明或站点介绍。"
+
 navigation:
   - text: "首页"
     url: /
-  - text: "关于"
-    url: /about/
-  - text: "项目"
-    url: /projects/
-  - text: "标签"
-    url: /tags/
+  - text: "学习资料"
+    url: /learning/
+  - text: "科研妙招"
+    url: /research/
+  - text: "生活攻略"
+    url: /life/
+  - text: "随笔漫谈"
+    url: /essays/
 
 permalink: /blog/:year/:month/:day/:title/
 markdown: kramdown

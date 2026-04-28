@@ -29,10 +29,10 @@ layout: default
     {{ content }}
   </div>
 
-  <aside class="author-note">
-    <div>
-      <strong>{{ site.author.name }}</strong>
-      <p>{{ site.author.bio }}</p>
-    </div>
-  </aside>
+  <footer class="post-meta-panel">
+    <span>写于 {{ page.date | date: "%Y-%m-%d" }}</span>
+    {% if page.categories.size > 0 %}
+      <span>{{ page.categories | join: " / " }}</span>
+    {% endif %}
+  </footer>
 </article>
