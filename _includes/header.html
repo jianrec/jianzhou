@@ -2,10 +2,7 @@
 
 <nav class="site-nav" aria-label="主导航">
   <div class="nav-inner">
-    <a class="nav-brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} 首页">
-      <img src="{{ '/assets/images/monogram.svg' | relative_url }}" alt="" width="34" height="34">
-      <span>{{ site.title }}</span>
-    </a>
+    <a class="nav-brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} 首页">← {{ site.title }}</a>
 
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="打开菜单">
       <span></span>
@@ -25,7 +22,7 @@
 
     <div class="nav-tools">
       <div class="search-box" role="search">
-        <input id="site-search" type="search" placeholder="搜索" autocomplete="off" aria-label="搜索文章">
+        <input id="site-search" type="search" placeholder="搜索文章或笔记..." autocomplete="off" aria-label="搜索文章">
         <ul id="search-results" class="search-results" aria-label="搜索结果"></ul>
       </div>
       <button class="theme-toggle" type="button" aria-label="切换深浅色">◐</button>

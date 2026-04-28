@@ -17,6 +17,7 @@
   --font-serif: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
   --font-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --max: 800px;
+  --top-strip: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -82,6 +83,17 @@ body {
   transition: background 0.25s ease, color 0.25s ease;
 }
 
+body::before {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1200;
+  width: 100%;
+  height: var(--top-strip);
+  content: "";
+  background: #2a4740;
+}
+
 a {
   color: var(--accent);
   text-decoration: underline;
@@ -120,7 +132,7 @@ img {
 
 .site-nav {
   position: fixed;
-  top: 0;
+  top: var(--top-strip);
   z-index: 1000;
   width: 100%;
   border-bottom: 1px solid var(--border);
@@ -139,25 +151,13 @@ img {
 }
 
 .nav-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.62rem;
   min-width: 0;
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.nav-brand img {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--bg-warm);
-}
-
-.nav-brand span {
   overflow: hidden;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -312,7 +312,7 @@ img {
 .site-main {
   width: min(100% - 2rem, var(--max));
   margin: 0 auto;
-  padding-top: 6.6rem;
+  padding-top: 7.25rem;
 }
 
 .home-intro,
@@ -577,18 +577,9 @@ h3 {
 }
 
 .author-note {
-  display: flex;
-  gap: 0.9rem;
-  align-items: flex-start;
   margin: 3rem 0 0;
   padding: 1rem 0;
   border-top: 1px solid var(--border);
-}
-
-.author-note img {
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  border-radius: 50%;
 }
 
 .author-note strong {
@@ -693,8 +684,8 @@ h3 {
     font-size: 17px;
   }
 
-  .nav-brand span {
-    max-width: 6.5rem;
+  .nav-brand {
+    max-width: 9rem;
   }
 
   .search-box {
