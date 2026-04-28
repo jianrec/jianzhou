@@ -1,0 +1,49 @@
+title: "周健的个人博客"
+description: "记录技术实践、阅读笔记与长期思考。"
+lang: "zh-CN"
+timezone: "Asia/Shanghai"
+
+# 上线后按仓库类型修改：
+# - 用户主页仓库：url: "https://你的 GitHub 用户名.github.io"，baseurl: ""
+# - 项目页仓库：url: "https://你的 GitHub 用户名.github.io"，baseurl: "/仓库名"
+url: "https://jianrec.github.io"
+baseurl: "/jianzhou"
+
+author:
+  name: "周健"
+  bio: "把复杂问题拆开，写成可复用的经验。"
+  location: "中国"
+  email: ""
+  github: "jianrec"
+
+permalink: /blog/:year/:month/:day/:title/
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "周健"
+  - scope:
+      path: ""
+    values:
+      layout: "page"
+
+sass:
+  style: compressed
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor

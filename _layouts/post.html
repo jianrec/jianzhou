@@ -1,0 +1,28 @@
+---
+layout: default
+---
+
+<article class="post-shell">
+  <header class="post-header">
+    <a class="back-link" href="{{ '/archive/' | relative_url }}">返回文章列表</a>
+    <p class="eyebrow">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y年%m月%d日" }}</time>
+      {% if page.categories.size > 0 %} / {{ page.categories | first }}{% endif %}
+    </p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}
+      <p>{{ page.description }}</p>
+    {% endif %}
+    {% if page.tags.size > 0 %}
+      <div class="tag-list" aria-label="标签">
+        {% for tag in page.tags %}
+          <span>{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="content">
+    {{ content }}
+  </div>
+</article>

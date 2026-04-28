@@ -1,0 +1,18 @@
+<a class="skip-link" href="#content">跳到正文</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} 首页">
+      <img class="brand__mark" src="{{ '/assets/images/monogram.svg' | relative_url }}" alt="" width="44" height="44">
+      <span class="brand__text">{{ site.title }}</span>
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      {% for item in site.data.navigation %}
+        <a class="nav__link" href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>
+          {{ item.title }}
+        </a>
+      {% endfor %}
+    </nav>
+  </div>
+</header>
