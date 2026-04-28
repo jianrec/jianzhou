@@ -1,13 +1,10 @@
 <footer class="site-footer">
-  <div class="offsite-links">
-    {% if site.footer.has_social %}
-      {% include social.html %}
-    {% endif %}
-  </div><!-- .offsite-links -->
-  <div class="footer-bottom">
-    <div class="site-info">
-      {{ site.footer.content | markdownify }}
-    </div><!-- .site-info -->
-    <a href="#page" id="back-to-top" class="back-to-top"><span class="screen-reader-text">回到顶部</span>&#8593;</a>
-  </div><!-- .footer-bottom -->
-</footer><!-- .site-footer -->
+  <div class="footer-inner">
+    <p>&copy; {{ site.time | date: "%Y" }} {{ site.author.name }}.</p>
+    <div class="footer-links">
+      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      <a href="https://github.com/{{ site.author.github }}" target="_blank" rel="noopener">GitHub</a>
+      <button class="to-top" type="button">回到顶部 ↑</button>
+    </div>
+  </div>
+</footer>

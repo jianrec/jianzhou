@@ -6,7 +6,7 @@ description: "这里放长期项目、实验作品和阶段性成果。"
 
 ## 个人博客
 
-基于 Jekyll、Scriptor 主题和 GitHub Pages 的长期写作空间，聚合文章、项目记录和阶段性复盘。
+基于 Jekyll、GitHub Pages 和定制主题的长期写作空间，聚合文章、项目记录和阶段性复盘。
 
 [查看首页]({{ '/' | relative_url }})
 

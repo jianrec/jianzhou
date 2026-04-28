@@ -2,28 +2,37 @@
 layout: default
 ---
 
-<main class="site-main fadeInDown delay_075s">
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">{{page.title}}</h1>
-    </header><!-- .post-header -->
-    <div class="post-content">
-      <div class="archive-tags">
-        {% capture site_tags %}{% for tag in site.tags %}{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
-        {% assign sortedTags = site_tags | split:',' | sort %}
-        {% for tag in sortedTags %}
-        <a href="#{{ tag | cgi_escape }}">{{ tag }}</a>{% unless forloop.last %} {% endunless %}
-        {% endfor %}
-      </div><!-- .archive-tag-list -->
-      {% for tag in sortedTags %}
-        <h2 id="{{ tag | cgi_escape }}">{{ tag }}</h2>
-        <ul class="archive-post-list">
-        {% for post in site.tags[tag] %}
-          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="archive-meta"> — <time class="archive-date" datetime="{{ post.date | date: "%Y-%m-%d" }}">{{ post.date | date: "%Y年%m月%d日" }}</time></span></li>
-        {% endfor %}
-        </ul><!-- .archive-post-list -->
-        <p><a href="#top" class="archive-top-link">返回顶部 &#8593;</a></p>
-      {% endfor %}
-    </div><!-- .post-content -->
-  </article><!-- .post -->
-</main><!-- .site-main -->
+<article class="page-shell">
+  <header class="page-header">
+    <p class="kicker">Index</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}
+      <p>{{ page.description }}</p>
+    {% endif %}
+  </header>
+
+  {% capture site_tags %}{% for tag in site.tags %}{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
+  {% assign sorted_tags = site_tags | split: "," | sort %}
+
+  <div class="tag-cloud">
+    {% for tag in sorted_tags %}
+      <a href="#{{ tag | cgi_escape }}">{{ tag }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="tag-sections">
+    {% for tag in sorted_tags %}
+      <section id="{{ tag | cgi_escape }}">
+        <h2>{{ tag }}</h2>
+        <ul class="simple-list">
+          {% for post in site.tags[tag] %}
+            <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              <time datetime="{{ post.date | date: "%Y-%m-%d" }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  </div>
+</article>

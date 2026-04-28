@@ -1,32 +1,34 @@
-<header class="site-header">
-  {% if page.url == "/" %}
-  <h1 class="site-title"><a class="logo-text" href="{{ site.baseurl }}/">{{site.title}}</a></h1>
-  {% else %}
-  <p class="site-title"><a class="logo-text" href="{{ site.baseurl }}/">{{site.title}}</a></p>
-  {% endif %}
-  <nav class="site-navigation">
-    <div class="site-navigation-wrap">
-      <h2 class="screen-reader-text">主导航</h2>
-      <ul class="menu">
-        {% for item in site.navigation %}
-        {% assign current = nil %}
-        {% if page.url == item.url %}
-        {% assign current = 'nav-current' %}
-        {% endif %}
-        <li class="menu-item {{ current }}">
-          <a class="{{ current }}" href="{{ item.url | relative_url }}">{{ item.text }}</a>
-        </li>
-        {% endfor %}
-      </ul><!-- .menu -->
-      <button id="menu-close" class="menu-toggle"><span class="screen-reader-text">关闭菜单</span><span
-          class="icon-close" aria-hidden="true"></span></button>
-    </div><!-- .site-navigation-wrap -->
-  </nav><!-- .site-navigation -->
-  <button id="menu-open" class="menu-toggle"><span class="screen-reader-text">打开菜单</span><span class="icon-menu" aria-hidden="true"></span></button>
-</header>
+<a class="skip-link" href="#content">跳到正文</a>
 
-{% if site.description and site.description != "" and page.url == "/" %}
-<div class="site-description fadeInDown delay_05s">
-  <p>{{ site.description }}</p>
-</div><!-- .site-description -->
-{% endif %}
+<nav class="site-nav" aria-label="主导航">
+  <div class="nav-inner">
+    <a class="nav-brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }} 首页">
+      <img src="{{ '/assets/images/monogram.svg' | relative_url }}" alt="" width="34" height="34">
+      <span>{{ site.title }}</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="打开菜单">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <ul id="nav-links" class="nav-links">
+        {% for item in site.navigation %}
+          {% assign current = nil %}
+          {% if page.url == item.url %}
+            {% assign current = 'is-current' %}
+          {% endif %}
+          <li><a class="{{ current }}" href="{{ item.url | relative_url }}">{{ item.text }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div class="nav-tools">
+      <div class="search-box" role="search">
+        <input id="site-search" type="search" placeholder="搜索" autocomplete="off" aria-label="搜索文章">
+        <ul id="search-results" class="search-results" aria-label="搜索结果"></ul>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="切换深浅色">◐</button>
+    </div>
+  </div>
+</nav>

@@ -14,10 +14,9 @@ author:
   email: ""
   github: "jianrec"
 
-favicon: images/favicon.png
+favicon: assets/images/monogram.svg
 google_analytics: ""
 disqus: ""
-accent_color: "#2d72d9"
 
 navigation:
   - text: "首页"
@@ -29,10 +28,6 @@ navigation:
   - text: "标签"
     url: /tags/
 
-footer:
-  content: "&copy; 2026 周健. Theme by [JustGoodThemes](https://www.justgoodthemes.com)."
-  has_social: true
-
 permalink: /blog/:year/:month/:day/:title/
 markdown: kramdown
 kramdown:
@@ -40,13 +35,9 @@ kramdown:
   hard_wrap: false
 
 plugins:
-  - jekyll-paginate
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-
-paginate: 3
-paginate_path: "/page:num/"
 
 defaults:
   - scope:
