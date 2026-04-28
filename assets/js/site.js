@@ -19,18 +19,33 @@
   }
 
   if (themeToggle) {
-    themeToggle.addEventListener('click', function () {
-      var root = document.documentElement;
+    var root = document.documentElement;
+    var systemDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+    function getEffectiveTheme() {
       var current = root.getAttribute('data-theme');
-      var next = current === 'dark' ? 'light' : current === 'light' ? '' : 'dark';
-      if (next) {
-        root.setAttribute('data-theme', next);
-        try { localStorage.setItem('theme', next); } catch (error) {}
-      } else {
-        root.removeAttribute('data-theme');
-        try { localStorage.removeItem('theme'); } catch (error) {}
-      }
+      if (current === 'dark' || current === 'light') return current;
+      return systemDark && systemDark.matches ? 'dark' : 'light';
+    }
+
+    function updateThemeToggle() {
+      var current = getEffectiveTheme();
+      themeToggle.setAttribute('aria-label', current === 'dark' ? '切换为浅色模式' : '切换为深色模式');
+      themeToggle.setAttribute('title', current === 'dark' ? '切换为浅色模式' : '切换为深色模式');
+    }
+
+    updateThemeToggle();
+
+    themeToggle.addEventListener('click', function () {
+      var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (error) {}
+      updateThemeToggle();
     });
+
+    if (systemDark && systemDark.addEventListener) {
+      systemDark.addEventListener('change', updateThemeToggle);
+    }
   }
 
   if (toTop) {

@@ -14,6 +14,7 @@
   --gold: #c7a664;
   --nav-bg: rgba(250, 249, 246, 0.92);
   --shadow: 0 18px 45px rgba(30, 58, 95, 0.08);
+  --toggle-ink: #171712;
   --font-serif: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
   --font-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --max: 800px;
@@ -33,6 +34,7 @@
     --accent-2: #b8d8f2;
     --nav-bg: rgba(27, 26, 24, 0.92);
     --shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+    --toggle-ink: #f1eee7;
   }
 }
 
@@ -48,6 +50,7 @@
   --accent-2: #b8d8f2;
   --nav-bg: rgba(27, 26, 24, 0.92);
   --shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  --toggle-ink: #f1eee7;
 }
 
 :root[data-theme="light"] {
@@ -62,6 +65,7 @@
   --accent-2: #2f628e;
   --nav-bg: rgba(250, 249, 246, 0.92);
   --shadow: 0 18px 45px rgba(30, 58, 95, 0.08);
+  --toggle-ink: #171712;
 }
 
 * {
@@ -232,14 +236,36 @@ img {
 }
 
 .theme-toggle {
+  display: grid;
+  place-items: center;
   min-width: 38px;
   height: 38px;
+  padding: 0;
+  color: var(--toggle-ink);
 }
 
 .theme-toggle:hover,
 .to-top:hover {
   border-color: var(--accent);
+}
+
+.to-top:hover {
   color: var(--accent);
+}
+
+.theme-toggle__icon {
+  display: block;
+  width: 17px;
+  height: 17px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: inset 8px 0 0 var(--bg);
+  transition: color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.theme-toggle:hover .theme-toggle__icon {
+  transform: rotate(180deg);
 }
 
 .search-box {
