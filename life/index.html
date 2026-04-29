@@ -28,6 +28,8 @@ title: 生活攻略
     {% include sub-category-section.html sub="其他" posts=no_sub_posts %}
   {% endif %}
 
+  {% comment %}
+  未来如果需要恢复菜谱专区，取消这一段注释。
   <div class="kb-subentries" style="margin-top: 3rem; text-align: center; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
     <a href="{{ '/life/recipes/' | relative_url }}"
        style="display: inline-block; padding: 0.6rem 1.4rem;
@@ -40,6 +42,7 @@ title: 生活攻略
       🍳 菜谱专区 →
     </a>
   </div>
+  {% endcomment %}
 </article>
 
 {% include category-listing-tools.html %}
