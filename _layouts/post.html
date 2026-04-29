@@ -2,37 +2,466 @@
 layout: default
 ---
 
-<article class="post-shell">
-  <header class="post-header">
-    <a class="back-link" href="{{ '/' | relative_url }}">← 返回首页</a>
-    <time datetime="{{ page.date | date: "%Y-%m-%d" }}">{{ page.date | date: "%Y年%m月%d日" }}</time>
-    <h1>{{ page.title }}</h1>
-    {% if page.description %}
-      <p>{{ page.description }}</p>
-    {% endif %}
-    {% if page.tags.size > 0 %}
-      <div class="tag-row">
-        {% for tag in page.tags %}
-          <a href="{{ '/tags/' | relative_url }}#{{ tag | cgi_escape }}">{{ tag }}</a>
-        {% endfor %}
+<nav id="toc-container">
+  <h4 style="margin-bottom: 1.2rem; line-height: 1.4;">
+    <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 768) toggleTOC(event); return false;"
+       style="font-family: var(--font-display); font-size: 1.05rem; color: var(--color-ink); text-decoration: none; font-weight: 600; display: block; transition: color 0.2s;"
+       onmouseover="this.style.color='var(--color-accent)'"
+       onmouseout="this.style.color='var(--color-ink)'">
+      {{ page.title | replace: 'LaTeX', 'L<span class="latex-a">a</span>T<span class="latex-e">e</span>X' }}
+    </a>
+  </h4>
+  <ul id="toc-ul"></ul>
+</nav>
+
+<button id="toc-toggle" onclick="toggleTOC(event)" title="Toggle Index">☰</button>
+<div id="toc-backdrop"></div>
+
+<article class="post-container" style="max-width: 800px; margin: 0 auto;">
+  <header class="post-header" style="margin-bottom: 3.5rem; text-align: center;">
+    <h1 style="font-size: 2.3rem; color: var(--color-ink); line-height: 1.3;">
+      {{ page.title | replace: 'LaTeX', 'L<span class="latex-a">a</span>T<span class="latex-e">e</span>X' }}
+    </h1>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; color: var(--color-light); font-family: 'Cormorant Garamond', serif; margin-top: 2rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--color-border);">
+
+      <span style="font-size: 1.1rem;">{{ page.date | date: "%B %d, %Y" }}</span>
+
+      <span style="font-size: 1.1rem; font-style: italic; letter-spacing: 0.05rem;">
+        By {{ page.author | default: site.author.name }}
+      </span>
+
+      <div id="post-stats" style="display: none; gap: 1.2rem; align-items: center; font-family: var(--font-body); font-size: 0.95rem; opacity: 0.85;">
+
+        <div style="display: flex; align-items: center; gap: 0.4rem;" title="阅读量">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span class="waline-pageview-count" data-path="{{ page.url }}">...</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.4rem;" title="评论数">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="waline-comment-count" data-path="{{ page.url }}">...</span>
+        </div>
+
       </div>
-    {% endif %}
+    </div>
   </header>
 
-  {% if page.feature_image and page.feature_image != "" %}
-    <figure class="feature-image">
-      <img src="{{ page.feature_image | relative_url }}" alt="{{ page.title }}">
-    </figure>
-  {% endif %}
+  <div class="markdown-content" id="post-content">
+    {% if page.pdf_url or page.download_url %}
+      {% assign _dl_url = page.download_url | default: page.pdf_url %}
+      {% if page.download_label %}
+        {% assign _btn_label = page.download_label %}
+      {% elsif page.material_type == "Notes" %}
+        {% assign _btn_label = "下载完整版 PDF 讲义" %}
+      {% elsif page.material_type == "Exams" %}
+        {% assign _btn_label = "下载往年题 PDF" %}
+      {% elsif page.material_type == "Homework" %}
+        {% assign _btn_label = "下载作业整理 PDF" %}
+      {% else %}
+        {% assign _btn_label = "下载文件" %}
+      {% endif %}
 
-  <div class="markdown-content">
+      <h2>讲义在线预览与下载</h2>
+      <blockquote><p>手机端和平板端可能不能获得最佳的预览效果，请点击下方按钮下载</p></blockquote>
+
+      <div class="pdf-container" style="margin: 2rem 0;">
+        {% unless page.download_url %}
+        <div class="pdf-preview">
+          <iframe src="{{ _dl_url }}" width="100%" height="600px"
+                  style="border: 1px solid var(--color-border); border-radius: 8px;">
+            您的浏览器不支持内嵌 PDF，请通过下方链接下载。
+          </iframe>
+        </div>
+        {% endunless %}
+        <div style="margin-top: 1rem; text-align: center;">
+          <a href="{{ _dl_url }}" download
+             style="padding: 10px 20px; border: 1px solid var(--color-ink);
+                    text-decoration: none; color: var(--color-ink);
+                    font-family: var(--font-display); transition: 0.3s;">
+            📥 {{ _btn_label }}
+          </a>
+        </div>
+      </div>
+    {% endif %}
     {{ content }}
   </div>
 
-  <footer class="post-meta-panel">
-    <span>写于 {{ page.date | date: "%Y-%m-%d" }}</span>
-    {% if page.categories.size > 0 %}
-      <span>{{ page.categories | join: " / " }}</span>
-    {% endif %}
-  </footer>
+<style>
+  /* 隐藏 Waline 默认的 Markdown 语法指引图标 */
+  .wl-actions a { display: none !important; }
+  .wl-editor, .wl-input, .wl-btn { font-family: inherit !important; }
+
+  /* 隐藏 Waline 头像及徽章容器 */
+  #waline .wl-avatar,
+  #waline img.wl-avatar,
+  #waline .wl-badge-wrap {
+    display: none !important;
+  }
+
+  /* 强行接管右侧评论面板的排版 */
+  #waline .wl-panel {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* 去除输入框旁边留给头像的空白 */
+  #waline .wl-header {
+    margin-left: 0 !important;
+  }
+
+  /* 🚀 新增：移动端彻底隐藏 PDF 预览框，只保留下载按钮 */
+  @media (max-width: 768px) {
+    .pdf-container iframe {
+      display: none !important;
+    }
+  }
+
+  /* 评论区：手机端只保留昵称输入框 */
+  @media (max-width: 768px) {
+    #waline [data-waline-field="mail"],
+    #waline [data-waline-field="link"] {
+      display: none !important;
+    }
+    #waline [data-waline-field="nick"] {
+      flex: 1 1 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    #waline .wl-header {
+      flex-wrap: wrap !important;
+    }
+  }
+
+  /* 自定义 reaction widget */
+  .rxn-widget {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    justify-content: center;
+    margin: 4rem auto 1rem;
+    padding-top: 1.8rem;
+    border-top: 1px dashed var(--color-border);
+  }
+  .rxn-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.55rem 0.9rem 0.45rem;
+    background: var(--color-bg-warm);
+    border: 1.5px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    min-width: 58px;
+    color: inherit;
+  }
+  .rxn-btn:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+  .rxn-btn:disabled { opacity: 0.55; cursor: wait; }
+  .rxn-btn.active {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg-warm));
+  }
+  .rxn-emoji { font-size: 1.3rem; line-height: 1; }
+  .rxn-count {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    font-family: 'Cormorant Garamond', serif;
+    line-height: 1;
+  }
+  .rxn-btn.active .rxn-count { color: var(--color-accent); font-weight: 600; }
+
+  /* 图片配文：正体、灰色、小字、居中、窄栏 */
+  .markdown-content .img-caption {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--color-light);
+    max-width: 60%;
+    margin: -0.5rem auto 2rem;
+    font-style: normal;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  @media (max-width: 768px) {
+    .markdown-content .img-caption {
+      max-width: 80%;
+      font-size: 0.78rem;
+    }
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+{% if page.reactions and site.reaction_api and site.reaction_api != "" %}
+<div id="rxn-widget" class="rxn-widget" data-post="{{ page.permalink | default: page.url }}" style="display: none;"></div>
+{% endif %}
+
+{% if site.waline_server and site.waline_server != "" %}
+<div id="waline" style="margin-top: 5rem; padding-top: 2rem; border-top: 1px dashed var(--color-border); display: none;"></div>
+
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
+
+  // 动态注入样式以覆盖 Waline 异步加载后的样式
+  const forceStyle = document.createElement('style');
+  forceStyle.innerHTML = `
+    .wl-actions a { display: none !important; }
+    .wl-editor, .wl-input, .wl-btn { font-family: inherit !important; }
+    #waline .wl-user { display: none !important; }
+    #waline .wl-panel { margin-left: 0 !important; width: 100% !important; }
+  `;
+  document.head.appendChild(forceStyle);
+
+  // 带超时的可达性检测：任何响应（含 4xx）都算通；超时/网络错误算挂
+  const reachable = (url, ms) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { signal: ctrl.signal, cache: 'no-store' })
+      .then(() => true).catch(() => false).finally(() => clearTimeout(timer));
+  };
+
+  {% if page.reactions and site.reaction_api and site.reaction_api != "" %}
+    // 自定义 reaction widget 接管了 Waline 的 reaction UI
+    const reactionConfig = false;
+  {% else %}
+    const reactionConfig = [
+      'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44d.png',
+      'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44e.png'
+    ];
+  {% endif %}
+
+  // Waline：ping 通才显示 + init；否则静默保持隐藏
+  reachable('{{ site.waline_server }}/api/comment?type=count&path=/', 4000).then(ok => {
+    if (!ok) return;
+
+    const walineEl = document.getElementById('waline');
+    const statsEl = document.getElementById('post-stats');
+    if (walineEl) walineEl.style.display = '';
+    if (statsEl) statsEl.style.display = 'flex';
+
+    init({
+      el: '#waline',
+      serverURL: '{{ site.waline_server }}',
+      dark: 'auto',
+      lang: 'zh-CN',
+      emoji: ['//unpkg.com/@waline/emojis@1.1.0/tieba'],
+      placeholder: '欢迎交流！不填昵称也可以直接发布哦...',
+      pageview: true,
+      comment: true,
+      texRenderer: (blockMode, tex) => {
+        if (window.katex) {
+          return window.katex.renderToString(tex, { displayMode: blockMode, throwOnError: false });
+        }
+        return tex;
+      },
+      highlighter: (code) => code,
+      locale: {
+        reactionTitle: '',
+        preview: '👀 开启 Markdown 预览',
+        anonymous: '神秘学者'
+      },
+      reaction: reactionConfig,
+      requiredMeta: [],
+    });
+
+    // 评论区：三个 meta 输入框加"（可选）"提示 + 手机端靠 CSS 隐藏邮箱/网址
+    const metaFields = {
+      nick: '昵称（可选）',
+      mail: '邮箱（可选）',
+      link: '网址（可选）'
+    };
+    const patchMeta = () => {
+      Object.entries(metaFields).forEach(([name, ph]) => {
+        const input = walineEl.querySelector(`input[name="${name}"]`);
+        if (!input) return;
+        if (input.placeholder !== ph) input.placeholder = ph;
+        const wrap = input.closest('.wl-header-item') || input.parentElement;
+        if (wrap && wrap.dataset.walineField !== name) {
+          wrap.dataset.walineField = name;
+        }
+      });
+    };
+    new MutationObserver(patchMeta).observe(walineEl, { childList: true, subtree: true });
+  });
+
+  {% if page.reactions and site.reaction_api and site.reaction_api != "" %}
+  // ── 自定义 reaction widget ─────────────────────────────────────────
+  (() => {
+    const RXN_API = '{{ site.reaction_api }}';
+    const RXN_EMOJIS = {{ page.reactions | jsonify }};
+    const RXN_GROUPS = {% if page.reaction_groups %}{{ page.reaction_groups | jsonify }}{% else %}null{% endif %};
+    const container = document.getElementById('rxn-widget');
+    if (!container) return;
+    const POST_ID = container.dataset.post;
+
+    let uid = localStorage.getItem('rxn-uid');
+    if (!uid) {
+      uid = (crypto.randomUUID && crypto.randomUUID()) ||
+            (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+      localStorage.setItem('rxn-uid', uid);
+    }
+
+    const groupMatesOf = (emoji) => {
+      if (!RXN_GROUPS || !RXN_GROUPS.length) return RXN_EMOJIS;
+      for (const g of RXN_GROUPS) if (g.includes(emoji)) return g;
+      return [emoji];
+    };
+
+    container.innerHTML = RXN_EMOJIS.map(e =>
+      `<button type="button" class="rxn-btn" data-emoji="${e}" title="${e}">
+         <span class="rxn-emoji">${e}</span>
+         <span class="rxn-count">·</span>
+       </button>`
+    ).join('');
+
+    const render = ({ counts, active }) => {
+      container.querySelectorAll('.rxn-btn').forEach(btn => {
+        const e = btn.dataset.emoji;
+        btn.querySelector('.rxn-count').textContent = counts[e] ?? 0;
+        btn.classList.toggle('active', active.includes(e));
+      });
+    };
+
+    const load = async () => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 4000);
+      try {
+        const url = `${RXN_API}?post=${encodeURIComponent(POST_ID)}&uid=${encodeURIComponent(uid)}&emojis=${encodeURIComponent(RXN_EMOJIS.join(','))}`;
+        const r = await fetch(url, { signal: ctrl.signal });
+        const data = await r.json();
+        if (data && data.counts) {
+          render(data);
+          container.style.display = '';  // 成功才显示 widget
+        }
+      } catch (err) {
+        // 静默：保持 widget 隐藏
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    container.addEventListener('click', async (ev) => {
+      const btn = ev.target.closest('.rxn-btn');
+      if (!btn || btn.disabled) return;
+      btn.disabled = true;
+      const emoji = btn.dataset.emoji;
+      try {
+        const r = await fetch(RXN_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ post: POST_ID, uid, emoji, groupMates: groupMatesOf(emoji) })
+        });
+        const data = await r.json();
+        if (data && data.counts) render(data);
+      } catch (err) { console.warn('rxn toggle failed', err); }
+      finally { btn.disabled = false; }
+    });
+
+    load();
+  })();
+  {% endif %}
+
+  // 🚀 全局公式渲染（绝对原封不动）
+  setTimeout(() => {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '\\[', right: '\\]', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  }, 800);
+</script>
+{% endif %}
+
+<div style="margin-top: 4rem; text-align: center;">
+  <a href="{{ site.baseurl }}/" style="color: var(--color-muted); text-decoration: none;">← 返回首页</a>
+</div>
+
 </article>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const postContent = document.getElementById('post-content');
+    const tocUl = document.getElementById('toc-ul');
+    const headings = postContent.querySelectorAll('h1, h2');
+
+    if (headings.length <= 1) {
+      document.getElementById('toc-toggle').style.display = 'none';
+      return;
+    }
+
+    headings.forEach((heading, index) => {
+      const id = 'section-' + index;
+      heading.setAttribute('id', id);
+
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = heading.textContent;
+
+      if (heading.tagName === 'H2') {
+        a.classList.add('toc-h2');
+      }
+
+      li.appendChild(a);
+      tocUl.appendChild(li);
+
+      a.addEventListener('click', () => {
+        if (window.innerWidth <= 768) toggleTOC();
+      });
+    });
+
+    // 宽屏自动常驻：同步 open 类状态
+    if (window.innerWidth >= 1400) {
+      document.getElementById('toc-container').classList.add('open');
+      document.getElementById('toc-toggle').innerHTML = '&times;';
+    }
+
+    // 点击遮罩关闭抽屉（手机端）
+    const backdrop = document.getElementById('toc-backdrop');
+    if (backdrop) {
+      backdrop.addEventListener('click', () => toggleTOC());
+    }
+  });
+
+  // 点击目录和按钮以外的区域，自动收回目录（仅手机端）
+  document.addEventListener('click', function(event) {
+    const toc = document.getElementById('toc-container');
+    const btn = document.getElementById('toc-toggle');
+
+    if (toc.classList.contains('open') && !toc.contains(event.target) && !btn.contains(event.target)) {
+      if (window.innerWidth <= 768) {
+        toggleTOC();
+      }
+    }
+  });
+
+  function toggleTOC(event) {
+    if (event) event.stopPropagation();
+    const toc = document.getElementById('toc-container');
+    const btn = document.getElementById('toc-toggle');
+    const backdrop = document.getElementById('toc-backdrop');
+    toc.classList.toggle('open');
+    const isOpen = toc.classList.contains('open');
+    if (backdrop) backdrop.classList.toggle('active', isOpen && window.innerWidth <= 768);
+    btn.innerHTML = isOpen ? '&times;' : '&#9776;';
+  }
+</script>

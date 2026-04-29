@@ -1,53 +1,38 @@
-title: "周健的个人博客"
-description: "记录技术实践、阅读笔记与长期思考。"
+title: 周健的个人博客
+description: 个人文章、学习资料和长期笔记存档
+url: "https://jianrec.github.io"
+baseurl: "/jianzhou"
 lang: "zh-CN"
 timezone: "Asia/Shanghai"
 
-# 项目页仓库发布地址。
-url: "https://jianrec.github.io"
-baseurl: "/jianzhou"
-
 author:
-  name: "周健"
-  bio: "把复杂问题拆开，写成可复用的经验。"
-  location: "中国"
+  name: 周健
   email: ""
-  github: "jianrec"
-
-favicon: ""
-google_analytics: ""
-disqus: ""
 
 entry_link:
   text: "← 英文主页"
   url: "#"
 
-sidebar:
-  notice_title: "站务公告"
-  notice: "这里预留给你的公告、更新说明或站点介绍。"
+waline_server: ""
+reaction_api: ""
 
-navigation:
-  - text: "首页"
-    url: /
-  - text: "学习资料"
-    url: /learning/
-  - text: "科研妙招"
-    url: /research/
-  - text: "生活攻略"
-    url: /life/
-  - text: "随笔漫谈"
-    url: /essays/
-
-permalink: /blog/:year/:month/:day/:title/
 markdown: kramdown
-kramdown:
-  input: GFM
-  hard_wrap: false
+permalink: /posts/:year-:month-:day-:title/
 
 plugins:
-  - jekyll-feed
   - jekyll-seo-tag
-  - jekyll-sitemap
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - .gitignore
+
+collections:
+  notes:
+    output: true
+    permalink: /notes/:path/
 
 defaults:
   - scope:
@@ -56,16 +41,12 @@ defaults:
     values:
       layout: "post"
       author: "周健"
+      main_category: "随笔漫谈"
   - scope:
       path: ""
+      type: "notes"
     values:
-      layout: "page"
+      layout: "post"
+      author: "周健"
 
-sass:
-  style: compressed
-
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - README.md
-  - vendor
+study_order: []

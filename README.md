@@ -1,8 +1,8 @@
 # 周健的个人博客
 
-这是一个基于 Jekyll 和 GitHub Pages 的免费托管个人博客，包含首页、标签页、文章归档、项目页、关于页、RSS、站点地图、SEO 元数据和 GitHub Actions 自动部署流程。
+这是一个基于 Jekyll 和 GitHub Pages 的免费托管个人博客，包含首页、栏目页、搜索、文章布局和 GitHub Actions 自动部署流程。
 
-当前主题是为本站定制的典雅学术风格，视觉方向参考 `zirconeey.github.io`，但未复制其源码或素材。
+当前站点结构基于已授权的 `zirconeey.github.io` 源码整理，已移除对方文章、个人信息、文件资源和评论服务配置。
 
 ## 本地预览
 

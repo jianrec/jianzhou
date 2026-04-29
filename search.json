@@ -2,13 +2,50 @@
 layout: null
 ---
 [
-  {% for post in site.posts %}
+  {% assign items = site.posts | concat: site.notes %}
+  {% for item in items %}
+
+    {%- assign cat_str = "" -%}
+
+    {%- if item.main_category -%}
+      {%- assign cat_str = item.main_category -%}
+    {%- elsif item.discipline -%}
+      {%- assign cat_str = "学习资料" -%}
+    {%- endif -%}
+
+    {%- if item.discipline -%}
+      {%- if cat_str != "" -%}{%- assign cat_str = cat_str | append: " · " -%}{%- endif -%}
+      {%- assign cat_str = cat_str | append: item.discipline -%}
+    {%- endif -%}
+
+    {%- if item.course -%}
+      {%- if cat_str != "" -%}{%- assign cat_str = cat_str | append: " · " -%}{%- endif -%}
+      {%- assign cat_str = cat_str | append: item.course -%}
+    {%- endif -%}
+
+    {%- if item.sub_category -%}
+      {%- if cat_str != "" -%}{%- assign cat_str = cat_str | append: " · " -%}{%- endif -%}
+      {%- assign cat_str = cat_str | append: item.sub_category -%}
+    {%- endif -%}
+
+    {%- if item.material_type -%}
+      {%- if cat_str != "" -%}{%- assign cat_str = cat_str | append: " · " -%}{%- endif -%}
+      {%- assign cat_str = cat_str | append: item.material_type -%}
+    {%- endif -%}
+
+    {%- if cat_str == "" -%}
+      {%- if item.categories.size > 0 -%}
+        {%- assign cat_str = item.categories | first -%}
+      {%- else -%}
+        {%- assign cat_str = "未分类" -%}
+      {%- endif -%}
+    {%- endif -%}
+
     {
-      "title": {{ post.title | jsonify }},
-      "url": {{ post.url | relative_url | jsonify }},
-      "date": {{ post.date | date: "%Y-%m-%d" | jsonify }},
-      "category": {{ post.categories | first | default: "文章" | jsonify }},
-      "tags": {{ post.tags | join: " " | jsonify }}
+      "title"    : {{ item.title | jsonify }},
+      "category" : {{ cat_str | jsonify }},
+      "url"      : "{{ site.baseurl }}{{ item.url }}",
+      "date"     : "{{ item.date | date: '%Y-%m-%d' }}"
     }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ]

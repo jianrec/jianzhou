@@ -1,0 +1,204 @@
+{%- comment -%}
+渲染「生命故事」这种年度仪式感专栏：每篇文章一张大卡。
+- 有 age：年龄做主视觉（巨大 serif），年份做次级（短线夹在中间）
+- 无 age：年份做主视觉，回落到原渐变设计
+- 有 cover（保留能力，当前未用）：图片做背景，年龄/年份白字叠加
+inputs:
+  - sub: 小节标题
+  - posts: 已排序的文章对象数组
+{%- endcomment -%}
+<section class="yearly-story-section">
+  <div class="yearly-section-head">
+    <h2 class="yearly-section-title"><span class="yearly-section-icon">📂</span>{{ include.sub }}</h2>
+  </div>
+  <div class="yearly-grid">
+    {% for post in include.posts %}
+      {% if post.published == false %}{% continue %}{% endif %}
+      {%- assign _has_cover = post.cover -%}
+      {%- assign _has_age = post.age -%}
+      <a class="yearly-card{% if _has_cover %} yearly-card--cover{% endif %}{% if _has_age %} yearly-card--age{% endif %}" href="{{ post.url | relative_url }}">
+        <div class="yearly-card-banner"
+          {%- if _has_cover %} style="background-image: url('{{ post.cover | relative_url }}'); background-position: {{ post.cover_position | default: 'center' }};"{% endif %}>
+          <span class="yearly-deco">✦</span>
+          {% if _has_age %}
+            <span class="yearly-age">{{ post.age }}</span>
+            <div class="yearly-year-frame">
+              <span class="yearly-year-display">{{ post.date | date: "%Y" }}</span>
+            </div>
+          {% else %}
+            <span class="yearly-year">{{ post.date | date: "%Y" }}</span>
+            {% unless _has_cover %}<span class="yearly-divider"></span>{% endunless %}
+          {% endif %}
+        </div>
+        <div class="yearly-card-body">
+          <h3 class="yearly-card-title">{{ post.title }}</h3>
+          <div class="yearly-card-meta">{{ post.date | date: "%-m 月 %-d 日" }}</div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .yearly-story-section { margin-top: 2.5rem; margin-bottom: 1.5rem; }
+  .yearly-section-head { margin-bottom: 1.4rem; }
+  .yearly-section-title {
+    font-size: 1.4rem; color: var(--color-accent);
+    font-family: var(--font-display); margin: 0;
+  }
+  .yearly-section-icon { color: var(--color-muted); margin-right: 0.5rem; }
+
+  .yearly-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+  .yearly-card {
+    display: flex; flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none; color: inherit;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .yearly-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(30, 58, 95, 0.14);
+    border-color: var(--color-accent);
+  }
+
+  /* —— 默认 banner（无 cover）：渐变暖色 —— */
+  .yearly-card-banner {
+    position: relative;
+    padding: 1.7rem 1.6rem 1.2rem;
+    background: linear-gradient(135deg, #fdf6e9 0%, #f7ebd1 100%);
+    border-bottom: 1px solid rgba(201, 162, 95, 0.28);
+  }
+  .yearly-deco {
+    position: absolute;
+    top: 1rem; right: 1.2rem;
+    color: var(--color-accent);
+    opacity: 0.5;
+    font-size: 1.1rem;
+    z-index: 2;
+  }
+  .yearly-year {
+    font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+    font-size: 2.8rem; font-weight: 600;
+    color: var(--color-accent);
+    line-height: 1; letter-spacing: 0.04em;
+    display: block;
+    position: relative; z-index: 2;
+  }
+  .yearly-divider {
+    display: block;
+    width: 36px; height: 2px;
+    background: var(--color-accent);
+    opacity: 0.5;
+    margin-top: 0.75rem;
+  }
+
+  /* —— 有 age：年龄做主视觉，居中 —— */
+  .yearly-card--age .yearly-card-banner {
+    padding: 2.4rem 1.6rem 2rem;
+    text-align: center;
+  }
+  .yearly-age {
+    display: block;
+    font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+    font-size: 4.6rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    position: relative; z-index: 2;
+  }
+  .yearly-year-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    margin-top: 0.7rem;
+    position: relative; z-index: 2;
+  }
+  .yearly-year-frame::before,
+  .yearly-year-frame::after {
+    content: '';
+    display: block;
+    width: 22px; height: 1px;
+    background: var(--color-accent);
+    opacity: 0.5;
+  }
+  .yearly-year-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: var(--color-accent);
+    opacity: 0.75;
+    letter-spacing: 0.14em;
+  }
+
+  /* —— 有 cover：图片做背景（保留能力，当前未用）—— */
+  .yearly-card--cover .yearly-card-banner {
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    background-color: #2a2a2a;
+    overflow: hidden;
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+  .yearly-card--cover .yearly-card-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, transparent 35%, rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+  }
+  .yearly-card--cover .yearly-deco {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    opacity: 1;
+  }
+  .yearly-card--cover .yearly-age,
+  .yearly-card--cover .yearly-year,
+  .yearly-card--cover .yearly-year-display {
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  .yearly-card--cover .yearly-year-frame::before,
+  .yearly-card--cover .yearly-year-frame::after {
+    background: rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
+  }
+
+  /* —— 卡片正文 —— */
+  .yearly-card-body {
+    padding: 1.15rem 1.6rem 1.5rem;
+    display: flex; flex-direction: column; gap: 0.45rem;
+    flex: 1;
+  }
+  .yearly-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 0;
+    line-height: 1.45;
+    font-family: var(--font-display);
+  }
+  .yearly-card-meta {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--color-light);
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 768px) {
+    .yearly-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .yearly-card-banner { padding: 1.4rem 1.3rem 1rem; }
+    .yearly-year { font-size: 2.4rem; }
+    .yearly-card--age .yearly-card-banner { padding: 2rem 1.3rem 1.7rem; }
+    .yearly-age { font-size: 3.8rem; }
+    .yearly-card-body { padding: 1rem 1.3rem 1.2rem; }
+    .yearly-card-title { font-size: 1.05rem; }
+  }
+</style>

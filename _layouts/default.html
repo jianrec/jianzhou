@@ -1,37 +1,713 @@
-<!doctype html>
-<html lang="{{ site.lang | default: 'zh-CN' }}">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#1b1a18">
-    <script>
-      (function () {
-        try {
-          var theme = localStorage.getItem('theme');
-          document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
-        } catch (error) {}
-      })();
-    </script>
-    {% seo %}
-    <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }} Feed" href="{{ '/feed.xml' | absolute_url }}">
-    {% if site.favicon and site.favicon != "" %}
-      <link rel="icon" href="{{ site.favicon | relative_url }}" type="image/svg+xml">
-    {% endif %}
-    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  </head>
-  <body>
-    {% include header.html %}
-    <main id="content" class="site-main">
-      <div class="content-grid">
-        <div class="content-primary">
-          {{ content }}
-        </div>
-        {% unless page.sidebar == false %}
-          {% include sidebar.html %}
-        {% endunless %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+
+  {% if site.favicon and site.favicon != "" %}
+  <link rel="icon" href="{{ site.favicon | relative_url }}">
+  {% endif %}
+
+  <script>
+    // 主题持久化：在 <body> 渲染前同步读取 localStorage，避免闪烁
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --color-ink: #1a1a2e;
+      --color-text: #374151;
+      --color-muted: #6b7280;
+      --color-light: #9ca3af;
+      --color-border: #e5e7eb;
+      --color-bg: #fafaf9;
+      --color-bg-warm: #f5f4f0;
+      --color-accent: #1e3a5f;
+      --color-accent-light: #2d5a8e;
+      --color-highlight: #c9a96e;
+      --color-nav-bg: rgba(250,250,249,0.92);
+
+      /* 字体变量 */
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'Cormorant Garamond', 'Noto Serif SC', 'Songti SC', serif;
+      --font-solemn: 'Noto Serif SC', 'Songti SC', 'STZhongsong', serif;
+      --max-width: 800px;
+    }
+
+    /* 暗黑模式配置 */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --color-ink: #e8e6e3; --color-text: #b8b5b0; --color-border: #2e2c2a;
+        --color-bg: #1a1918; --color-bg-warm: #222120; --color-accent: #7aaddb;
+        --color-nav-bg: rgba(26,25,24,0.92);
+      }
+    }
+    :root[data-theme="dark"] {
+      --color-ink: #e8e6e3; --color-text: #b8b5b0; --color-border: #2e2c2a;
+      --color-bg: #1a1918; --color-bg-warm: #222120; --color-accent: #7aaddb;
+      --color-nav-bg: rgba(26,25,24,0.92);
+    }
+    :root[data-theme="light"] {
+      --color-ink: #1a1a2e; --color-text: #374151; --color-border: #e5e7eb;
+      --color-bg: #fafaf9; --color-bg-warm: #f5f4f0; --color-accent: #1e3a5f;
+      --color-nav-bg: rgba(250,250,249,0.92);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-body); color: var(--color-text); background: var(--color-bg); line-height: 1.8; font-size: 18px; transition: background 0.3s; }
+
+    /* 强化的超链接 */
+    a { color: var(--color-accent); text-decoration: underline; text-decoration-color: rgba(30, 58, 95, 0.2); transition: all 0.2s; }
+    a:hover { color: var(--color-accent-light); text-decoration-color: var(--color-accent-light); }
+
+    /* 导航栏核心布局 */
+    nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: var(--color-nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-border); }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto; padding: 0.7rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* 导航链接 (PC端显示，手机端隐藏) */
+    .nav-links { display: flex; list-style: none; gap: 1.8rem; }
+    .nav-links a { text-decoration: none; font-size: 0.95rem; font-weight: 500; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .nav-links a:hover { color: var(--color-accent); }
+
+    /* 返回链接样式 */
+    .nav-back { font-size: 0.9rem; font-weight: 500; color: var(--color-accent); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+
+    /* 汉堡菜单按钮 (默认隐藏) */
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-toggle span { display: block; width: 20px; height: 1.5px; background: var(--color-ink); margin: 5px auto; transition: 0.3s; }
+
+    /* 主题切换按钮 */
+    .theme-toggle { background: none; border: 1px solid var(--color-border); cursor: pointer; padding: 0.35rem 0.5rem; border-radius: 4px; font-size: 0.9rem; color: var(--color-muted); transition: all 0.2s; }
+    .theme-toggle:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+    /* 响应式：手机端调整 */
+    @media (max-width: 768px) {
+      .nav-inner {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr; /* 三段式：左、中、右 */
+        align-items: center;
+        padding: 0.6rem 1.2rem;
+      }
+
+      .nav-back { justify-self: start; font-size: 0.8rem; } /* 左对齐 */
+      .nav-toggle { display: block; justify-self: center; } /* 居中汉堡包 */
+      .nav-right-box { justify-self: end; } /* 右对齐亮度 */
+
+      /* 手机端下拉菜单 */
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--color-nav-bg);
+        padding: 1.5rem; gap: 1.2rem;
+        border-bottom: 1px solid var(--color-border);
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+      .nav-links.open { display: flex; }
+
+      /* 汉堡菜单变成 X */
+      .nav-toggle.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+      .nav-toggle.active span:nth-child(2) { opacity: 0; }
+      .nav-toggle.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    }
+
+    /* 主体内容 */
+    main { max-width: var(--max-width); margin: 6.5rem auto 4rem; padding: 0 2rem; }
+    h1, h2, h3 { font-family: var(--font-display); color: var(--color-ink); font-weight: 600; margin-bottom: 1rem; }
+    h1 { font-size: 2.5rem; }
+
+    footer { max-width: var(--max-width); margin: 4rem auto 0; padding: 2rem; text-align: center; font-size: 0.85rem; color: var(--color-light); border-top: 1px solid var(--color-border); }
+
+    /* LaTeX 徽标专用样式 */
+    .latex-logo { font-variant: small-caps; }
+    .latex-logo .latex-a { text-transform: uppercase; font-size: 0.75em; vertical-align: 0.25em; margin-left: -0.32em; margin-right: -0.15em; }
+    .latex-logo .latex-e { text-transform: uppercase; font-size: 0.75em; vertical-align: -0.25em; margin-left: -0.15em; margin-right: -0.05em; }
+
+    /* ======================================================
+       Doocs 风格 Markdown 正文排版 (融合典雅学术风)
+       ====================================================== */
+    .markdown-content { font-family: var(--font-body); line-height: 1.8; color: var(--color-text); word-wrap: break-word; }
+    .markdown-content p { margin-bottom: 1.2em; }
+
+    /* 标题：加粗并拉开层次，H2 带底部边框 */
+    .markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4 { color: var(--color-ink); font-family: var(--font-display); margin-top: 2em; margin-bottom: 1em; font-weight: 600; }
+    .markdown-content h2 { font-size: 1.6rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.4em; }
+    .markdown-content h3 { font-size: 1.3rem; }
+
+    /* Doocs 标志性的引用块 (Blockquote) */
+    .markdown-content blockquote { margin: 1.5em 0; padding: 0.8em 1.2em; border-left: 4px solid var(--color-accent); background-color: var(--color-bg-warm); color: var(--color-muted); border-radius: 0 4px 4px 0; }
+    .markdown-content blockquote p { margin: 0; }
+
+    /* Doocs 标志性的行内代码 (Inline Code) - 浅洋红色底色 */
+    .markdown-content code { color: #c7254e; background-color: #f9f2f4; padding: 0.2em 0.4em; border-radius: 4px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.85em; }
+
+    /* 适配暗黑模式的行内代码 */
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .markdown-content code { background-color: rgba(255, 80, 120, 0.15); color: #ff7b93; } }
+    :root[data-theme="dark"] .markdown-content code { background-color: rgba(255, 80, 120, 0.15); color: #ff7b93; }
+
+    /* 深色代码块 (Preformatted Text) */
+    .markdown-content pre { background-color: #282c34; color: #abb2bf; padding: 1.2rem; border-radius: 6px; overflow-x: auto; margin-bottom: 1.5em; }
+    .markdown-content pre code { color: inherit; background-color: transparent; padding: 0; }
+
+    /* 列表排版 */
+    .markdown-content ul, .markdown-content ol { padding-left: 2em; margin-bottom: 1.5em; }
+    .markdown-content li { margin-bottom: 0.5em; }
+
+    /* 图片：增加相框质感与居中，限制最大宽度避免撑满全栏 */
+    .markdown-content img { max-width: 70%; display: block; margin: 1.5em auto; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    /* 表格：清爽的斑马线风格 */
+    .markdown-content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5em; font-size: 0.95rem; }
+    .markdown-content th, .markdown-content td { border: 1px solid var(--color-border); padding: 0.6em 1em; }
+    .markdown-content th { background-color: var(--color-bg-warm); font-weight: 600; }
+
+    /* 超链接下划线特效 */
+    .markdown-content a { color: var(--color-accent); text-decoration: none; border-bottom: 1px dashed var(--color-accent); transition: all 0.2s; padding-bottom: 1px; }
+    .markdown-content a:hover { border-bottom-style: solid; background-color: rgba(30, 58, 95, 0.05); }
+
+    /* 1. 全局平滑滚动 */
+    html { scroll-behavior: smooth; }
+
+    /* 2. 侧边栏目录容器 - 电脑端收窄，避免紧贴正文 */
+    #toc-container {
+      position: fixed;
+      left: 1.5rem;
+      top: 10rem;
+      width: 240px;
+      max-height: 65vh;
+      overflow-y: auto;
+      padding: 1.2rem 0.9rem;
+      background: var(--color-bg);
+      border-left: 2px solid var(--color-accent);
+      z-index: 100;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      opacity: 0;
+      transform: translateX(-30px);
+      visibility: hidden;
+    }
+
+    #toc-container.open {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.05);
+    }
+
+    /* 3. 目录列表样式 */
+    #toc-ul { list-style: none; padding: 0; margin: 0; }
+    #toc-ul li { position: relative; margin-bottom: 0.8rem; line-height: 1.4; }
+
+    #toc-ul a {
+      color: var(--color-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+      display: block;
+      padding-left: 1.3rem;
+    }
+    #toc-ul a:hover { color: var(--color-accent); }
+
+    /* 一级标题圆点 */
+    #toc-ul li > a:not(.toc-h2)::before {
+      content: "•";
+      position: absolute;
+      left: 0.35rem;
+      color: var(--color-accent);
+      font-size: 1rem;
+    }
+
+    /* 二级标题缩进与圆点 */
+    #toc-ul .toc-h2 {
+      padding-left: 2.1rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    #toc-ul .toc-h2::before {
+      content: "•";
+      position: absolute;
+      left: 1.1rem;
+      color: var(--color-accent);
+      font-size: 1rem;
+    }
+
+    /* 4. 左下角经典悬浮标按钮 */
+    #toc-toggle {
+      position: fixed;
+      left: 1.5rem;
+      bottom: 2rem;
+      width: 46px;
+      height: 46px;
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 101;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 5. 手机端：底部抽屉 */
+    @media (max-width: 768px) {
+      #toc-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 99;
+        backdrop-filter: blur(2px);
+      }
+      #toc-backdrop.active { display: block; }
+
+      #toc-container {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        max-height: 55vh;
+        border-left: none;
+        border-bottom: none;
+        border-top: 2px solid var(--color-accent);
+        border-radius: 20px 20px 0 0;
+        padding: 1.2rem 1.5rem 2rem;
+        transform: translateY(110%);
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      #toc-container.open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      #toc-container::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: var(--color-border);
+        border-radius: 2px;
+        margin: 0 auto 1.2rem;
+      }
+    }
+    /* 解决目录跳转后标题被导航栏遮挡的问题 */
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3 {
+      scroll-margin-top: 6.5rem; /* 预留顶部导航栏高度 + 呼吸空间 */
+    }
+
+    /* ==========================================
+       最终方案 C：悬浮重力场电梯 (实心微圆角三角)
+       ========================================== */
+    .elevator-fab {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px; /* 增加呼吸感缝隙 */
+      z-index: 101;
+    }
+
+    .elevator-fab button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--color-accent);
+      opacity: 0.6; /* 平时保持低调，不干扰阅读 */
+      filter: drop-shadow(0 2px 4px rgba(30, 58, 95, 0.15));
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 悬浮效果：模拟物理按键“浮起”并点亮 */
+    .elevator-fab button:hover {
+      opacity: 1;
+      transform: translateY(-4px) scale(1.1);
+      filter: drop-shadow(0 8px 16px rgba(30, 58, 95, 0.25));
+    }
+
+    /* 点击反馈：轻微下陷感 */
+    .elevator-fab button:active {
+      transform: translateY(1px) scale(0.95);
+      transition: all 0.1s;
+    }
+
+    /* 使用 SVG 绘制带圆角的等腰三角形 */
+    .elevator-fab svg {
+      width: 28px;
+      height: 20px;
+      fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 4; /* 通过描边实现物理圆角 */
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 768px) {
+      .elevator-fab { right: 1rem; bottom: 1.5rem; gap: 8px; }
+      .elevator-fab svg { width: 24px; height: 16px; }
+
+      /* 手机端段落：两端对齐，避免右边距参差不齐 */
+      .markdown-content p {
+        text-align: justify;
+        overflow-wrap: break-word;
+        text-wrap: normal;
+      }
+    }
+
+    /* ======================================================
+       Mac 风格代码块装饰
+       ====================================================== */
+    .markdown-content pre {
+      position: relative;
+      padding-top: 38px !important; /* 顶部留出空间放那三个小圆点 */
+      background-color: #282c34;
+      border-radius: 8px;
+    }
+
+    /* 使用 CSS 伪元素画出红黄绿三个小圆点 */
+    .markdown-content pre::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 15px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff5f56; /* Mac 的关闭红 */
+      box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f; /* 最小化黄 + 全屏绿 */
+      z-index: 2;
+    }
+
+    /* 强制删除 H2 上方的线 */
+    .markdown-content h2 {
+      border-top: none !important;
+      border-bottom: none !important;
+      padding-top: 1.5em;
+      margin-top: 1em;
+    }
+    /* 同时也删除可能存在的 section 分隔线 */
+    .post-container section, .markdown-content section {
+      border-bottom: none !important;
+      border-top: none !important;
+    }
+
+    /* 现代排版魔法：智能平衡标题换行 */
+    .post-header h1,
+    .post-container h1,
+    .post-container h2 {
+      text-wrap: balance; /* 让多行标题自动保持长短均匀 */
+    }
+
+    /* 针对正文段落，防止最后一行只剩孤零零的一个词 */
+    .markdown-content p {
+      text-wrap: pretty;
+    }
+
+    .knowledge-base details { margin-bottom: 1rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-bg); }
+    .knowledge-base summary { padding: 1rem; cursor: pointer; font-weight: 600; color: var(--color-ink); list-style: none; transition: background 0.2s; }
+    .knowledge-base summary:hover { background: var(--color-bg-warm); }
+    .knowledge-base summary::before { content: '▸'; margin-right: 0.8rem; color: var(--color-accent); transition: transform 0.2s; display: inline-block; }
+    .knowledge-base details[open] > summary::before { transform: rotate(90deg); }
+
+    .discipline-title { font-size: 1.3rem; border-left: 4px solid var(--color-accent); }
+    .course-block { margin: 0.5rem 1.5rem 1rem 1.5rem; border: none !important; border-bottom: 1px dashed var(--color-border) !important; }
+    .course-title { font-size: 1.1rem; color: var(--color-accent); }
+    .type-section { padding-left: 3rem; margin-bottom: 1rem; }
+    .type-title { font-family: var(--font-display); font-style: italic; color: var(--color-light); margin-bottom: 0.5rem; }
+    .file-list { list-style: none; padding: 0; }
+    .file-list li { margin-bottom: 0.4rem; }
+    .file-list a { color: var(--color-text); text-decoration: none; border-bottom: 1px solid transparent; }
+    .file-list a:hover { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+
+    /* ======================================================
+       双向丝滑折叠动画 (支持展开与收起)
+       ====================================================== */
+    details summary { outline: none; }
+
+    /* 展开时的动画 */
+    details[open] summary ~ * {
+      animation: sweepDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* 收起时的动画（配合 JS 触发） */
+    details.is-closing summary ~ * {
+      animation: sweepUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes sweepDown {
+      0%   { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes sweepUp {
+      0%   { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ======================================================
+       全新的搜索框与移动端变身适配
+       ====================================================== */
+    #search-container { position: relative; display: flex; align-items: center; }
+    #mobile-search-btn { display: none; background: none; border: none; color: var(--color-ink); cursor: pointer; padding: 0.2rem; }
+    .search-wrapper { position: relative; display: flex; align-items: center; }
+
+    /* 电脑端内嵌放大镜 */
+    .search-icon { position: absolute; left: 12px; color: var(--color-muted); pointer-events: none; display: flex; align-items: center; }
+
+    #search-input {
+      padding: 0.4rem 0.8rem 0.4rem 2.2rem; /* 左侧留出 2.2rem 的空间给放大镜 */
+      border-radius: 20px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      outline: none;
+      font-size: 0.9rem;
+      width: 180px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #search-input:focus { width: 240px; border-color: var(--color-accent); }
+    #close-search-btn { display: none; background: none; border: none; color: var(--color-ink); font-size: 1.2rem; cursor: pointer; padding: 0 10px; }
+
+    /* 搜索结果框样式 */
+    #results-container {
+      position: absolute; top: calc(100% + 12px); right: 0; background: var(--color-nav-bg);
+      border: 1px solid var(--color-border); border-radius: 8px; width: 280px; max-height: 400px;
+      overflow-y: auto; list-style: none; padding: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 1000; display: none; backdrop-filter: blur(10px);
+    }
+
+    /* 手机端响应式魔法 */
+    @media (max-width: 768px) {
+      .nav-right-box { gap: 0.8rem !important; }
+
+      /* 默认状态：隐藏长条输入框，显示小放大镜 */
+      .search-wrapper { display: none; }
+      #mobile-search-btn { display: block; }
+
+      /* 搜索激活状态：变身全屏搜索栏 */
+      .nav-inner.search-active { display: flex; gap: 10px; }
+
+      /* 变身时，强行隐藏返回键、汉堡包、亮度键 */
+      .nav-inner.search-active .nav-left-zone,
+      .nav-inner.search-active .nav-toggle,
+      .nav-inner.search-active .theme-toggle { display: none; }
+
+      /* 让搜索框霸占 100% 宽度 */
+      .nav-inner.search-active .nav-right-box { flex: 1; width: 100%; justify-content: flex-end; }
+      .nav-inner.search-active #search-container { width: 100%; }
+      .nav-inner.search-active #mobile-search-btn { display: none; }
+      .nav-inner.search-active .search-wrapper { display: flex; width: 100%; }
+      .nav-inner.search-active #search-input { width: 100%; padding-left: 1rem; }
+      .nav-inner.search-active .search-icon { display: none; } /* 全屏搜索时隐藏内嵌图标，保持极简 */
+      .nav-inner.search-active #close-search-btn { display: block; }
+      .nav-inner.search-active #results-container { width: 100%; }
+    }
+  </style>
+  {% if site.waline_server and site.waline_server != "" %}
+  <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css" />
+  {% endif %}
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-left-zone">
+        {% if page.layout == "post" or page.collection == "notes" %}
+          {% if page.main_category == "科研妙招" %}
+            <a href="{{ site.baseurl }}/research/" class="nav-back">← 科研妙招</a>
+          {% elsif page.main_category == "生活攻略" %}
+            <a href="{{ site.baseurl }}/life/" class="nav-back">← 生活攻略</a>
+          {% elsif page.main_category == "随笔漫谈" %}
+            <a href="{{ site.baseurl }}/essays/" class="nav-back">← 随笔漫谈</a>
+          {% elsif page.material_type == "课程测评" %}
+            <a href="{{ site.baseurl }}/notes/course-reviews/" class="nav-back">← 课程测评</a>
+          {% elsif page.discipline == "语言考试" %}
+            <a href="{{ site.baseurl }}/notes/toefl-gre/" class="nav-back">← TOEFL &amp; GRE</a>
+          {% elsif page.discipline == "初升高" %}
+            <a href="{{ site.baseurl }}/notes/pre-high-school/" class="nav-back">← 初升高衔接</a>
+          {% elsif page.sub_category == "菜谱" %}
+            <a href="{{ site.baseurl }}/life/recipes/" class="nav-back">← 菜谱专区</a>
+          {% else %}
+            <a href="{{ site.baseurl }}/notes/" class="nav-back">← 学习资料</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ site.entry_link.url | default: '#' }}" class="nav-back">{{ site.entry_link.text | default: site.title }}</a>
+        {% endif %}
       </div>
-    </main>
-    {% include footer.html %}
-    <script src="{{ '/assets/js/site.js' | relative_url }}"></script>
-  </body>
+
+      <button class="nav-toggle" onclick="toggleMenu()" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="{{ site.baseurl }}/">首页</a></li>
+        <li><a href="{{ site.baseurl }}/notes/">学习资料</a></li>
+        <li><a href="{{ site.baseurl }}/research/">科研妙招</a></li>
+        <li><a href="{{ site.baseurl }}/life/">生活攻略</a></li>
+        <li><a href="{{ site.baseurl }}/essays/">随笔漫谈</a></li>
+      </ul>
+
+      <div class="nav-right-box" style="display: flex; align-items: center; gap: 1rem;">
+        <div id="search-container">
+          <button id="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="搜索">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+
+          <div class="search-wrapper">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" id="search-input" placeholder="搜索文章或笔记...">
+            <button id="close-search-btn" onclick="toggleMobileSearch()">✕</button>
+          </div>
+
+          <ul id="results-container"></ul>
+        </div>
+
+        <button class="theme-toggle" onclick="toggleTheme()" title="切换模式">&#9683;</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <footer>
+    &copy; {{ site.time | date: "%Y" }} {{ site.author.name }}.
+  </footer>
+
+  <script>
+    // 菜单切换逻辑
+    function toggleMenu() {
+      const links = document.querySelector('.nav-links');
+      const toggle = document.querySelector('.nav-toggle');
+      links.classList.toggle('open');
+      toggle.classList.toggle('active');
+    }
+
+    // 点击菜单外的任何地方关闭菜单
+    document.addEventListener('click', function(e) {
+      const links = document.querySelector('.nav-links');
+      const toggle = document.querySelector('.nav-toggle');
+      if (links && links.classList.contains('open') &&
+          !links.contains(e.target) && !toggle.contains(e.target)) {
+        links.classList.remove('open');
+        toggle.classList.remove('active');
+      }
+    });
+
+    // 亮度切换逻辑（持久化到 localStorage，跨页面保持）
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      let next;
+      if (!current) { next = 'dark'; }
+      else if (current === 'dark') { next = 'light'; }
+      else { next = null; }  // 第三态：跟随系统
+
+      if (next) {
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+      } else {
+        root.removeAttribute('data-theme');
+        try { localStorage.removeItem('theme'); } catch (e) {}
+      }
+    }
+
+    // 🚀 新增：手机端搜索栏变身逻辑
+    function toggleMobileSearch() {
+      const navInner = document.querySelector('.nav-inner');
+      const searchInput = document.getElementById('search-input');
+      const resultsDiv = document.getElementById('results-container');
+
+      navInner.classList.toggle('search-active');
+
+      if (navInner.classList.contains('search-active')) {
+        // 展开时，延迟 100ms 自动弹出手机软键盘
+        setTimeout(() => searchInput.focus(), 100);
+      } else {
+        // 收起时，清空内容并隐藏结果
+        searchInput.value = '';
+        resultsDiv.style.display = 'none';
+      }
+    }
+  </script>
+
+  <div class="elevator-fab">
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
+      <svg viewBox="0 0 24 24"><path d="M12 4.5l8.5 13.5H3.5L12 4.5z"/></svg>
+    </button>
+    <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})" title="前往底部">
+      <svg viewBox="0 0 24 24"><path d="M12 19.5L3.5 6h17L12 19.5z"/></svg>
+    </button>
+  </div>
+
+  <script>
+    // 接管所有 details 的点击事件，实现完美双向动画
+    document.querySelectorAll('details summary').forEach(summary => {
+      summary.addEventListener('click', function(e) {
+        const details = this.parentNode;
+        // 如果当前是打开状态，准备收起
+        if (details.hasAttribute('open')) {
+          e.preventDefault(); // 阻止瞬间关闭
+          details.classList.add('is-closing'); // 触发收起动画
+          setTimeout(() => {
+            details.removeAttribute('open');
+            details.classList.remove('is-closing');
+          }, 280); // 等待动画接近完成时再真正移除属性
+        }
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    // 初始化搜索功能
+    if (document.getElementById('search-input')) {
+      SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('results-container'),
+        json: '{{ site.baseurl }}/search.json',
+        searchResultTemplate: '<li style="padding: 0.8rem; border-bottom: 1px solid var(--color-border);"><a href="{url}" style="text-decoration: none; color: var(--color-accent); font-weight: 500; font-size: 0.95rem; display: block;">{title}</a><span style="font-size: 0.8rem; color: var(--color-muted);">{category}</span></li>',
+        noResultsText: '<li style="padding: 1rem; text-align: center; color: var(--color-muted);">没有找到相关内容 🥲</li>'
+      });
+
+      // 当输入框有内容时显示结果，失去焦点时隐藏
+      const searchInput = document.getElementById('search-input');
+      const resultsDiv = document.getElementById('results-container');
+      searchInput.addEventListener('input', () => { resultsDiv.style.display = searchInput.value ? 'block' : 'none'; });
+      document.addEventListener('click', (e) => { if(!e.target.closest('#search-container')) resultsDiv.style.display = 'none'; });
+    }
+  </script>
+</body>
 </html>

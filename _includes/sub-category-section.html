@@ -1,0 +1,37 @@
+{%- comment -%}
+渲染一个 sub_category 小节：标题 + 折叠搜索 icon + 分页文章列表 + 翻页 UI
+inputs:
+  - sub: 小节标题（中文）
+  - posts: 已排序的文章对象数组
+  - page_size: 每页几条（默认 5）
+搜索/翻页 UI 仅在 posts.size > page_size 时渲染；阈值之下文章数太少，没必要再加一层 UI。
+JS 逻辑保留兜底：当 search-wrap 缺失时，filter/分页仍会安全降级。
+{%- endcomment -%}
+{%- assign _ps = include.page_size | default: 5 -%}
+{%- assign _published_count = 0 -%}
+{%- for _p in include.posts -%}{%- if _p.published != false -%}{%- assign _published_count = _published_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+<section class="post-list-section">
+  <div class="post-list-head">
+    <h2 class="post-list-title"><span class="sec-icon">📂</span>{{ include.sub }}</h2>
+    {% if _published_count > _ps %}
+    <div class="search-wrap">
+      <input type="search" class="search-input" placeholder="搜索 {{ include.sub }}…" aria-label="搜索 {{ include.sub }}" />
+      <button type="button" class="search-toggle" aria-label="搜索">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    {% endif %}
+  </div>
+  <ul class="paginated-list" data-page-size="{{ _ps }}">
+    {% for post in include.posts %}
+      {% if post.published != false %}
+      <li class="paginated-item" data-title="{{ post.title | downcase }}">
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <span class="post-date">{% if post.date %}{{ post.date | date: "%Y-%m-%d" }}{% endif %}</span>
+      </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <div class="paginated-empty" hidden>没有匹配「<span class="paginated-query"></span>」的文章</div>
+  <div class="pagination-wrap"></div>
+</section>

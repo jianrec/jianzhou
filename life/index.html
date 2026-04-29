@@ -1,0 +1,45 @@
+---
+layout: default
+title: 生活攻略
+---
+<article style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
+  <header style="margin-bottom: 3rem; text-align: center;">
+    <h1 style="font-size: 2.2rem; color: var(--color-ink); margin-bottom: 1rem;">生活攻略</h1>
+    <p style="color: var(--color-light); font-style: italic;">Life Hacks &amp; Guides</p>
+  </header>
+
+  {% assign raw_posts_main  = site.notes | where: "main_category", "生活攻略" %}
+  {% assign raw_posts_extra = site.notes | where_exp: "item", "item.extra_categories contains '生活攻略'" %}
+  {% assign raw_posts = raw_posts_main | concat: raw_posts_extra %}
+  {% assign raw_posts = raw_posts | where_exp: "item", "item.sub_category != '菜谱'" %}
+  {% assign dated_posts = raw_posts | where_exp: "item", "item.date" | sort: "date" | reverse %}
+  {% assign undated_posts = raw_posts | where_exp: "item", "item.date == nil" %}
+  {% assign category_posts = dated_posts | concat: undated_posts %}
+
+  {% assign sub_categories = category_posts | map: "sub_category" | compact | uniq %}
+
+  {% for sub in sub_categories %}
+    {% assign sub_posts = category_posts | where: "sub_category", sub %}
+    {% include sub-category-section.html sub=sub posts=sub_posts %}
+  {% endfor %}
+
+  {% assign no_sub_posts = category_posts | where_exp: "item", "item.sub_category == nil" %}
+  {% if no_sub_posts.size > 0 %}
+    {% include sub-category-section.html sub="其他" posts=no_sub_posts %}
+  {% endif %}
+
+  <div class="kb-subentries" style="margin-top: 3rem; text-align: center; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+    <a href="{{ '/life/recipes/' | relative_url }}"
+       style="display: inline-block; padding: 0.6rem 1.4rem;
+              border: 1px solid var(--color-border); border-radius: 999px;
+              color: var(--color-accent); text-decoration: none;
+              font-size: 1rem; letter-spacing: 0.02em;
+              transition: all 0.2s;"
+       onmouseover="this.style.background='var(--color-bg-warm)'; this.style.borderColor='var(--color-accent)';"
+       onmouseout="this.style.background=''; this.style.borderColor='var(--color-border)';">
+      🍳 菜谱专区 →
+    </a>
+  </div>
+</article>
+
+{% include category-listing-tools.html %}

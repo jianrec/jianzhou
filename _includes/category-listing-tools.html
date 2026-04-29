@@ -1,0 +1,239 @@
+{%- comment -%}
+全局样式 + JS，扫所有 .post-list-section 容器，给每个加上：折叠搜索 + 翻页（默认 8 条/页）。
+每个分类 landing 页面在末尾 include 一次即可。
+{%- endcomment -%}
+<style>
+  .post-list-section { margin-top: 2.5rem; }
+  .post-list-head {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .post-list-title {
+    font-size: 1.4rem; color: var(--color-accent);
+    font-family: var(--font-display); margin: 0;
+    flex: 1; min-width: 0;
+  }
+  .post-list-title .sec-icon { color: var(--color-muted); margin-right: 0.5rem; }
+
+  .search-wrap {
+    display: flex; align-items: center;
+    flex-shrink: 0;
+  }
+  .search-input {
+    width: 0; padding: 0;
+    border: 1px solid transparent; border-radius: 6px;
+    background: var(--color-bg); color: var(--color-text);
+    font-family: inherit; font-size: 0.92rem;
+    opacity: 0;
+    transition: width 0.25s ease, padding 0.25s ease, opacity 0.2s ease, border-color 0.2s ease, margin-right 0.25s ease;
+    overflow: hidden;
+  }
+  .search-wrap.active .search-input {
+    width: 180px; padding: 0.32rem 0.55rem;
+    border-color: var(--color-border); opacity: 1;
+    margin-right: 0.3rem;
+  }
+  .search-input:focus { outline: none; border-color: var(--color-accent); }
+  .search-toggle {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 0.4rem; color: var(--color-muted);
+    display: flex; align-items: center; border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .search-toggle:hover { color: var(--color-accent); background: var(--color-bg-warm); }
+  .search-wrap.active .search-toggle { color: var(--color-accent); }
+
+  .paginated-list { list-style: none; padding: 0; margin: 0; }
+  .paginated-item {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.6rem 0; gap: 1rem;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .paginated-item.hidden { display: none; }
+  .paginated-item a {
+    text-decoration: none; color: var(--color-text); font-weight: 500;
+    flex: 1; min-width: 0;
+  }
+  .paginated-item a:hover { color: var(--color-accent); }
+  .paginated-item .post-date {
+    color: var(--color-light); font-size: 0.88rem;
+    font-family: 'Cormorant Garamond', serif;
+    white-space: nowrap;
+  }
+  .paginated-empty {
+    padding: 1.2rem 0; text-align: center;
+    color: var(--color-light); font-style: italic; font-size: 0.92rem;
+  }
+
+  .pagination-wrap {
+    display: flex; justify-content: flex-end; align-items: center;
+    gap: 0.4rem; margin-top: 1rem; flex-wrap: wrap;
+    font-size: 0.92rem;
+  }
+  .pagination-wrap:empty { display: none; }
+  .pg-btn {
+    min-width: 30px; padding: 0.25rem 0.55rem;
+    border: 1px solid var(--color-border); border-radius: 6px;
+    background: var(--color-bg); color: var(--color-text);
+    cursor: pointer; font: inherit;
+    transition: all 0.15s;
+  }
+  .pg-btn:hover:not(:disabled):not(.pg-active) {
+    border-color: var(--color-accent); color: var(--color-accent);
+  }
+  .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pg-btn.pg-active {
+    background: var(--color-accent); color: #fff; border-color: var(--color-accent);
+  }
+  .pg-arrow { font-weight: 600; font-size: 1rem; }
+  .pg-ellipsis { color: var(--color-muted); padding: 0 0.2rem; }
+
+  @media (max-width: 768px) {
+    .post-list-head { flex-wrap: nowrap; }
+    .search-wrap.active .search-input { width: 130px; }
+  }
+</style>
+
+<script>
+(function() {
+  function computeVisiblePages(current, totalPages) {
+    if (totalPages <= 7) {
+      var arr = [];
+      for (var i = 1; i <= totalPages; i++) arr.push(i);
+      return arr;
+    }
+    var pageSet = {};
+    [1, totalPages, current, current - 1, current + 1].forEach(function(p) {
+      if (p >= 1 && p <= totalPages) pageSet[p] = true;
+    });
+    var sorted = Object.keys(pageSet).map(Number).sort(function(a, b) { return a - b; });
+    var result = [];
+    for (var i = 0; i < sorted.length; i++) {
+      if (i > 0 && sorted[i] - sorted[i-1] > 1) result.push('...');
+      result.push(sorted[i]);
+    }
+    return result;
+  }
+
+  function wireSection(section) {
+    var list = section.querySelector('.paginated-list');
+    if (!list) return;
+    var items = Array.prototype.slice.call(list.querySelectorAll('.paginated-item'));
+    var pageSize = parseInt(list.dataset.pageSize, 10) || 5;
+    var searchInput = section.querySelector('.search-input');
+    var searchToggle = section.querySelector('.search-toggle');
+    var searchWrap = section.querySelector('.search-wrap');
+    var paginationEl = section.querySelector('.pagination-wrap');
+    var emptyEl = section.querySelector('.paginated-empty');
+    var queryEl = section.querySelector('.paginated-query');
+
+    var filteredItems = items.slice();
+    var currentPage = 1;
+    var searchTimer;
+
+    function applyFilter() {
+      var q = searchInput ? (searchInput.value || '').trim().toLowerCase() : '';
+      filteredItems = q ? items.filter(function(i) {
+        return (i.dataset.title || '').indexOf(q) !== -1;
+      }) : items.slice();
+      currentPage = 1;
+      if (queryEl) queryEl.textContent = q;
+      render();
+    }
+
+    function render() {
+      var totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      var visible = filteredItems.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+      var visibleSet = new Set(visible);
+      items.forEach(function(i) {
+        if (visibleSet.has(i)) i.classList.remove('hidden');
+        else i.classList.add('hidden');
+      });
+
+      if (emptyEl) emptyEl.hidden = filteredItems.length > 0;
+      list.style.display = filteredItems.length === 0 ? 'none' : '';
+
+      renderPagination(totalPages);
+      maybeLockHeight(visible.length);
+    }
+
+    // 锁定列表 min-height，让翻到最后一页（条目少于满页）时翻页按钮 Y 坐标不跳。
+    function maybeLockHeight(visibleCount) {
+      if (filteredItems.length <= pageSize) {
+        // 全部条目 ≤ 一页：不存在翻页，解锁让列表自然高度
+        list.style.minHeight = '';
+        return;
+      }
+      if (visibleCount === pageSize) {
+        // 当前正在渲染满页 → 实测高度，锁定为 minHeight
+        list.style.minHeight = list.offsetHeight + 'px';
+      }
+      // 部分页：沿用之前满页时锁定的值，不更新
+    }
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1 || filteredItems.length === 0) {
+        paginationEl.innerHTML = '';
+        return;
+      }
+      var html = '';
+      html += '<button class="pg-btn pg-arrow" ' + (currentPage === 1 ? 'disabled' : '') + ' data-page="' + (currentPage - 1) + '" aria-label="上一页">‹</button>';
+      var pages = computeVisiblePages(currentPage, totalPages);
+      pages.forEach(function(p) {
+        if (p === '...') {
+          html += '<span class="pg-ellipsis">…</span>';
+        } else {
+          html += '<button class="pg-btn ' + (p === currentPage ? 'pg-active' : '') + '" data-page="' + p + '">' + p + '</button>';
+        }
+      });
+      html += '<button class="pg-btn pg-arrow" ' + (currentPage === totalPages ? 'disabled' : '') + ' data-page="' + (currentPage + 1) + '" aria-label="下一页">›</button>';
+      paginationEl.innerHTML = html;
+      paginationEl.querySelectorAll('.pg-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.disabled) return;
+          var p = parseInt(btn.dataset.page, 10);
+          if (!isNaN(p) && p >= 1 && p <= totalPages) {
+            currentPage = p;
+            render();
+          }
+        });
+      });
+    }
+
+    if (searchToggle) {
+      searchToggle.addEventListener('click', function() {
+        var willActivate = !searchWrap.classList.contains('active');
+        searchWrap.classList.toggle('active');
+        if (willActivate) {
+          setTimeout(function() { searchInput.focus(); }, 100);
+        } else {
+          if (searchInput.value) {
+            searchInput.value = '';
+            applyFilter();
+          }
+        }
+      });
+    }
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilter, 120);
+      });
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          applyFilter();
+          searchWrap.classList.remove('active');
+        }
+      });
+    }
+
+    applyFilter();
+  }
+
+  document.querySelectorAll('.post-list-section').forEach(wireSection);
+})();
+</script>
