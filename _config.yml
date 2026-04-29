@@ -1,7 +1,7 @@
 title: 周健的个人博客
 description: 个人文章、学习资料和长期笔记存档
 url: "https://jianrec.github.io"
-baseurl: "/jianzhou"
+baseurl: ""
 lang: "zh-CN"
 timezone: "Asia/Shanghai"
 
