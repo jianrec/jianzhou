@@ -49,5 +49,4 @@ defaults:
       layout: "post"
       author: "周健"
 
-study_order:
-  - ai-agent-learning
+study_order: []
