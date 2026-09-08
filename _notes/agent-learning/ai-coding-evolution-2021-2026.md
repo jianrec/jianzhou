@@ -2,8 +2,8 @@
 title: "AI Coding 发展史：从补全工具到多 Agent 指挥中心"
 date: 2026-06-27 09:51:10 +0800
 tags: [AI Coding, Coding Agent, Copilot, Claude Code, Codex, Gemini CLI, Agentic IDE, 开发工具]
-main_category: "Agent"
-sub_category: "AI Coding"
+main_category: "论文阅读"
+sub_category: "Agent · AI Coding"
 discipline: "Agent"
 course: "AI Coding"
 material_type: "技术脉络"

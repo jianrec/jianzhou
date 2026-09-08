@@ -2,8 +2,8 @@
 title: "learn-claude-code s01-s10：Quiz 标准答案复习笔记"
 date: 2026-06-27 20:26:04 +0800
 tags: [Agent, Claude Code, Coding Agent, Quiz, Tool Use, Hooks, Memory, Skill Loading, Context Compact]
-main_category: "Agent"
-sub_category: "learn-claude-code"
+main_category: "论文阅读"
+sub_category: "Agent · learn-claude-code"
 discipline: "Agent"
 course: "learn-claude-code"
 material_type: "Quiz 笔记"

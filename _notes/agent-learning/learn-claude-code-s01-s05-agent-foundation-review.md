@@ -2,8 +2,8 @@
 title: "learn-claude-code s01-s05：Agent Foundation 复习笔记"
 date: 2026-06-26 16:06:23 +0800
 tags: [Agent, Claude Code, Coding Agent, Tool Use, Permission, Hooks, TodoWrite, 源码学习]
-main_category: "Agent"
-sub_category: "learn-claude-code"
+main_category: "论文阅读"
+sub_category: "Agent · learn-claude-code"
 discipline: "Agent"
 course: "learn-claude-code"
 material_type: "源码学习"

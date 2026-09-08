@@ -2,8 +2,8 @@
 title: "成为 AI 时代开发者必备的核心技能"
 date: 2026-06-28 13:20:00 +0800
 tags: [AI Coding, AI 原生开发者, 软件工程, Agent, T 型开发者, DORA, 工程效率]
-main_category: "Agent"
-sub_category: "AI Coding"
+main_category: "论文阅读"
+sub_category: "Agent · AI Coding"
 discipline: "Agent"
 course: "AI Coding"
 material_type: "视频笔记"

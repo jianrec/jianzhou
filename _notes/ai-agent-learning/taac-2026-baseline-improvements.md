@@ -2,7 +2,8 @@
 title: "TAAC-2026：基于 baseline 的模型改进复盘"
 date: 2026-05-24 20:55:00 +0800
 tags: [TAAC, 推荐系统, CVR, 模型复盘]
-main_category: "LLM4Rec"
+main_category: "论文阅读"
+sub_category: "LLM4Rec"
 discipline: "LLM4Rec"
 course: "TAAC-2026"
 material_type: "竞赛复盘"

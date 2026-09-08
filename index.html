@@ -87,6 +87,60 @@ title: 周健的技术博客
     white-space: nowrap;
   }
 
+  .edu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin-top: 1.4rem;
+  }
+  .edu-item {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 1.4rem;
+    align-items: start;
+  }
+  .edu-period {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+    padding-top: 0.15rem;
+    white-space: nowrap;
+  }
+  .edu-degree {
+    font-weight: 600;
+    color: var(--color-ink);
+    font-size: 1.04rem;
+    line-height: 1.5;
+  }
+  .edu-school {
+    color: var(--color-muted);
+    font-size: 0.92rem;
+    margin-top: 0.15rem;
+    line-height: 1.6;
+  }
+  .edu-current {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.02rem 0.45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-bg-warm);
+    color: var(--color-accent);
+    font-size: 0.72rem;
+    font-weight: 500;
+    vertical-align: 0.12em;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .edu-item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+    .edu-period { padding-top: 0; }
+  }
+
   #react-widget {
     background: var(--color-bg-warm);
     border: 1px solid var(--color-border);
@@ -146,56 +200,60 @@ title: 周健的技术博客
 {% assign recent_items = dated_posts | concat: dated_notes | sort: "date" | reverse %}
 {% assign published_notes_count = published_notes | size %}
 {% assign total = published_posts | size | plus: published_notes_count %}
-{% assign llm_count = published_notes | where: "main_category", "LLM" | size %}
-{% assign llmrec_count = published_notes | where: "main_category", "LLM4Rec" | size %}
-{% assign agent_count = published_notes | where: "main_category", "Agent" | size %}
 {% assign paper_count = published_notes | where: "main_category", "论文阅读" | size %}
 {% assign essay_count = published_notes | where: "main_category", "技术随笔" | size | plus: published_posts.size %}
-{% assign visible_category_count = 4 %}
-{% if llm_count > 0 %}{% assign visible_category_count = visible_category_count | plus: 1 %}{% endif %}
+{% assign visible_category_count = 2 %}
 
 <section class="bio-section" style="margin-bottom: 3rem;">
-  <h1>关于这里</h1>
-  <p style="margin-bottom: 1.5rem;">
-    这里是周健的技术博客，记录我的成长经历，LLM、LLM4Rec、Agent 的学习，以及论文阅读收获，梦想成为一名 AI 领域的大登，成为一名有能力、有技术、有思想的全干工程师。
+  <h1>周健 / Jian Zhou</h1>
+  <p style="color: var(--color-muted); font-size: 0.95rem; margin-bottom: 1.3rem;">
+    应用统计硕士在读 · 浙江水利水电学院数学学院
+  </p>
+  <p style="margin-bottom: 1rem;">
+    我目前的研究兴趣集中在大语言模型（LLM）、大模型驱动的推荐系统（LLM4Rec）与
+    Agent 系统。这里记录我的论文阅读笔记、项目复盘与研究过程中的思考。
+  </p>
+  <p>
+    我关注的核心问题是：如何让语言模型真正理解用户偏好，以及如何把模型的推理能力
+    组织成可靠、可验证的系统。相比于收集更多的知识，我更希望留下能被检验的成果。
   </p>
 
-  <div style="font-size: 0.88rem; color: var(--color-muted); margin: 1.2rem 0 0; display: flex; gap: 1.8rem;">
+  <div style="font-size: 0.88rem; color: var(--color-muted); margin: 1.4rem 0 0; display: flex; gap: 1.8rem;">
     <span>📝 {{ total }} 份内容</span>
     <span>🗂 {{ visible_category_count }} 个分类</span>
   </div>
 </section>
 
 <section style="margin-bottom: 3.5rem;">
-  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem;">
-    {% if llm_count > 0 %}
-    <a href="{{ '/notes/' | relative_url }}" class="cat-card">
-      <span class="cat-icon">📚</span>
+  <h2 class="section-title">📖 Educations</h2>
+  <div class="edu-list">
+    <div class="edu-item">
+      <div class="edu-period">2025.09 - 2028.06</div>
       <div>
-        <div class="cat-name">LLM</div>
-        <div class="cat-count">{{ llm_count }} 份笔记</div>
+        <div class="edu-degree">
+          应用统计硕士（M.A.S. in Applied Statistics）<span class="edu-current">在读</span>
+        </div>
+        <div class="edu-school">数学学院，浙江水利水电学院</div>
       </div>
-    </a>
-    {% endif %}
-    <a href="{{ '/llmrec/' | relative_url }}" class="cat-card">
-      <span class="cat-icon">🧠</span>
+    </div>
+    <div class="edu-item">
+      <div class="edu-period">2021.09 - 2025.06</div>
       <div>
-        <div class="cat-name">LLM4Rec</div>
-        <div class="cat-count">{{ llmrec_count }} 篇文章</div>
+        <div class="edu-degree">水利水电工程学士（B.Eng. in Hydraulic and Hydropower Engineering）</div>
+        <div class="edu-school">水利水电工程学院，浙江水利水电学院</div>
       </div>
-    </a>
-    <a href="{{ '/agent/' | relative_url }}" class="cat-card">
-      <span class="cat-icon">🤖</span>
-      <div>
-        <div class="cat-name">Agent</div>
-        <div class="cat-count">{{ agent_count }} 篇文章</div>
-      </div>
-    </a>
+    </div>
+  </div>
+</section>
+
+<section style="margin-bottom: 3.5rem;">
+  <h2 class="section-title">🗂 内容分类</h2>
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin-top: 1.2rem;">
     <a href="{{ '/papers/' | relative_url }}" class="cat-card">
       <span class="cat-icon">📄</span>
       <div>
         <div class="cat-name">论文阅读</div>
-        <div class="cat-count">{{ paper_count }} 篇笔记</div>
+        <div class="cat-count">{{ paper_count }} 篇笔记 · 含 LLM4Rec 与 Agent</div>
       </div>
     </a>
     <a href="{{ '/essays/' | relative_url }}" class="cat-card">
@@ -209,7 +267,7 @@ title: 周健的技术博客
 </section>
 
 <section class="recent-section">
-  <h2 class="section-title">近期更新</h2>
+  <h2 class="section-title">📝 近期更新</h2>
   <div class="recent-list">
     {% for item in recent_items limit: 6 %}
       {% assign first_category = item.categories | first %}

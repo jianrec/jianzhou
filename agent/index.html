@@ -1,31 +1,19 @@
 ---
 layout: default
 title: Agent
+sitemap: false
 ---
-<article style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
-  <header style="margin-bottom: 3rem; text-align: center;">
-    <h1 style="font-size: 2.2rem; color: var(--color-ink); margin-bottom: 1rem;">Agent</h1>
-    <p style="color: var(--color-light); font-style: italic;">Agent Systems &amp; Workflows</p>
-  </header>
-
-  {% assign raw_posts_main  = site.notes | where: "main_category", "Agent" %}
-  {% assign raw_posts_extra = site.notes | where_exp: "item", "item.extra_categories contains 'Agent'" %}
-  {% assign raw_posts = raw_posts_main | concat: raw_posts_extra %}
-  {% assign dated_posts = raw_posts | where_exp: "item", "item.date" | sort: "date" | reverse %}
-  {% assign undated_posts = raw_posts | where_exp: "item", "item.date == nil" %}
-  {% assign category_posts = dated_posts | concat: undated_posts %}
-
-  {% assign sub_categories = category_posts | map: "sub_category" | compact | uniq %}
-
-  {% for sub in sub_categories %}
-    {% assign sub_posts = category_posts | where: "sub_category", sub %}
-    {% include sub-category-section.html sub=sub posts=sub_posts %}
-  {% endfor %}
-
-  {% assign no_sub_posts = category_posts | where_exp: "item", "item.sub_category == nil" %}
-  {% if no_sub_posts.size > 0 %}
-    {% include sub-category-section.html sub="其他" posts=no_sub_posts %}
-  {% endif %}
+<article style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
+  <h1 style="font-size: 2rem; color: var(--color-ink); margin-bottom: 1rem;">Agent 已并入论文阅读</h1>
+  <p style="color: var(--color-muted);">
+    Agent 的全部笔记现在收录在<a href="{{ '/papers/' | relative_url }}">论文阅读</a>栏目下的
+    「Agent」小节，内容没有任何删减。
+  </p>
+  <p style="margin-top: 1.5rem;">
+    <a href="{{ '/papers/' | relative_url }}">前往论文阅读 →</a>
+  </p>
 </article>
 
-{% include category-listing-tools.html %}
+<script>
+  window.location.replace("{{ '/papers/' | relative_url }}");
+</script>

@@ -2,8 +2,8 @@
 title: "learn-claude-code s01-s20：Comprehensive Agent 复习笔记"
 date: 2026-06-28 13:01:37 +0800
 tags: [Agent, Claude Code, Coding Agent, Comprehensive Agent, Tool Use, Memory, Worktree, MCP, Agent Teams]
-main_category: "Agent"
-sub_category: "learn-claude-code"
+main_category: "论文阅读"
+sub_category: "Agent · learn-claude-code"
 discipline: "Agent"
 course: "learn-claude-code"
 material_type: "综合复习"

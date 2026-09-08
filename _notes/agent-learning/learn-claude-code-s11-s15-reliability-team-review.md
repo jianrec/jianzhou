@@ -2,8 +2,8 @@
 title: "learn-claude-code s11-s15：从容错到多 Agent 团队"
 date: 2026-06-27 21:44:51 +0800
 tags: [Agent, Claude Code, Coding Agent, Error Recovery, Task System, Background Tasks, Cron Scheduler, Agent Teams]
-main_category: "Agent"
-sub_category: "learn-claude-code"
+main_category: "论文阅读"
+sub_category: "Agent · learn-claude-code"
 discipline: "Agent"
 course: "learn-claude-code"
 material_type: "源码学习"

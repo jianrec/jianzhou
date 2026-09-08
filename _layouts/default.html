@@ -545,11 +545,7 @@
     <div class="nav-inner">
       <div class="nav-left-zone">
         {% if page.layout == "post" or page.collection == "notes" %}
-          {% if page.main_category == "LLM4Rec" %}
-            <a href="{{ site.baseurl }}/llmrec/" class="nav-back">← LLM4Rec</a>
-          {% elsif page.main_category == "Agent" %}
-            <a href="{{ site.baseurl }}/agent/" class="nav-back">← Agent</a>
-          {% elsif page.main_category == "论文阅读" %}
+          {% if page.main_category == "论文阅读" %}
             <a href="{{ site.baseurl }}/papers/" class="nav-back">← 论文阅读</a>
           {% elsif page.main_category == "技术随笔" %}
             <a href="{{ site.baseurl }}/essays/" class="nav-back">← 技术随笔</a>
@@ -571,8 +567,6 @@
         {% if llm_nav_notes.size > 0 %}
         <li><a href="{{ site.baseurl }}/notes/">LLM</a></li>
         {% endif %}
-        <li><a href="{{ site.baseurl }}/llmrec/">LLM4Rec</a></li>
-        <li><a href="{{ site.baseurl }}/agent/">Agent</a></li>
         <li><a href="{{ site.baseurl }}/papers/">论文阅读</a></li>
         <li><a href="{{ site.baseurl }}/essays/">技术随笔</a></li>
       </ul>
